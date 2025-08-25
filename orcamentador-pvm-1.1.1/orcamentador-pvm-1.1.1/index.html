@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orçamentador — Pousada Viva Mar (2025–início/2026)</title>
+  <style>
+    :root{
+      /* Paleta Viva Mar */
+      --vm-green:#15803d; /* verde principal */
+      --vm-green-600:#16a34a; /* hover */
+      --vm-orange:#f59e0b; /* laranja detalhes */
+      --vm-ink:#14251a;
+      --vm-muted:#5b7262;
+      --bg:#f7faf7; /* fundo claro */
+      --card:#ffffff; /* cartões */
+      --line:#e6eee6; /* bordas */
+      --ok:#16a34a;--warn:#b45309;--err:#dc2626;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--vm-ink);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;min-height:100vh}
+    header{position:sticky;top:0;background:linear-gradient(180deg,#ffffff,#fffaf2 60%,#ffffff);border-bottom:1px solid var(--line);padding:12px 16px;z-index:10}
+    .brand{display:flex;align-items:center;gap:12px;max-width:1200px;margin:0 auto}
+    #brandLogo{height:40px;width:auto;object-fit:contain}
+    header h1{margin:0;font-size:16px;letter-spacing:.2px;color:var(--vm-ink);flex:1}
+    .wave{height:4px;background:linear-gradient(90deg, var(--vm-green), var(--vm-orange));border-radius:999px;margin-top:8px;opacity:.7}
+
+    main{max-width:1200px;margin:20px auto;padding:0 16px 40px}
+    .grid{display:grid;gap:14px}
+    @media (min-width:1050px){.grid{grid-template-columns:1.2fr 1fr}}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 8px 22px rgba(10,20,10,.06)}
+    .card h2{margin:0 0 10px;font-size:16px;color:var(--vm-ink)}
+    label{font-size:12px;color:var(--vm-muted);display:block;margin:10px 0 6px}
+    input,select,button,textarea{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:#ffffff;color:var(--vm-ink)}
+    input[type="date"]{padding:9px 10px}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .muted{color:var(--vm-muted)}
+    .pill{display:inline-block;padding:4px 8px;border-radius:999px;border:1px solid var(--line);color:var(--vm-muted);font-size:11px}
+    .tot{font-size:26px;margin:4px 0 8px}
+    .ok{color:var(--ok)}.warn{color:var(--warn)}.err{color:var(--err)}
+    table{width:100%;border-collapse:collapse;margin-top:10px}
+    th,td{border-bottom:1px dashed var(--line);padding:8px 6px;text-align:right;font-variant-numeric:tabular-nums}
+    th:first-child,td:first-child{text-align:left}
+    tfoot td{font-weight:600}
+    .actions{display:flex;gap:10px;flex-wrap:wrap}
+    .actions button{cursor:pointer;background:var(--vm-green);border:1px solid var(--vm-green);color:#fff}
+    .actions button:hover{background:var(--vm-green-600);border-color:var(--vm-green-600)}
+    .actions button.secondary{background:#fff;color:var(--vm-green);border-color:var(--vm-green)}
+    .actions .link{background:transparent;border:0;color:var(--vm-green);text-decoration:underline;cursor:pointer}
+    textarea{height:230px;resize:vertical}
+    .hint{font-size:12px;color:var(--vm-muted)}
+    .badge{display:inline-flex;gap:6px;align-items:center;padding:6px 10px;border-radius:10px;border:1px solid var(--line);color:var(--vm-ink);font-size:12px;background:#f8fff8}
+    .tests{margin-top:12px;font-size:12px}
+    .tests summary{cursor:pointer;color:#166534}
+    .tests ul{margin:6px 0 0 16px}
+    .tests li{margin:3px 0}
+    .room{display:grid;gap:8px;border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:10px;background:#fcfffc}
+    .roomHead{display:flex;gap:8px;align-items:center;justify-content:space-between}
+    .roomTitle{font-size:13px;color:#0f3d22}
+    .miniRow{display:grid;grid-template-columns:1.1fr .8fr .8fr .8fr 1fr 1.6fr;gap:8px}
+    .ghostBtn{background:#fff;border:1px solid var(--line);color:var(--vm-ink)}
+    .ghostBtn:hover{border-color:var(--vm-green);color:var(--vm-green)}
+    .copyDone{background:#0f2f0f;border-color:#145214}
+
+    /* Modal de Configurações */
+    dialog{border:1px solid var(--line);border-radius:16px;max-width:880px;width:92vw;padding:0;background:#fff}
+    .dlgHead{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line)}
+    .dlgBody{padding:14px 16px;}
+    .tabs{display:flex;gap:8px;margin-bottom:10px}
+    .tab{padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:#fff;color:#164a2a;cursor:pointer}
+    .tab.active{background:#eaffea;border-color:#bde9bd}
+    .twoCols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .preview{max-height:220px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:8px}
+    .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#f2f7f2;border:1px solid var(--line);border-radius:6px;padding:1px 4px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img id="brandLogo" alt="Pousada Viva Mar" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAA" />
+      <h1 style="flex:1">Orçamentador — Pousada Viva Mar <span class="pill">2025–jan/2026</span></h1>
+      <button id="btnCfg" class="ghostBtn" style="margin-left:auto">⚙️ Configurações</button>
+    </div>
+    <div class="wave"></div>
+  </header>
+  <main class="grid">
+    <section class="card">
+      <h2>Dados da estadia</h2>
+      <div class="row">
+        <div>
+          <label>Check-in</label>
+          <input type="date" id="checkin" />
+        </div>
+        <div>
+          <label>Check-out</label>
+          <input type="date" id="checkout" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label>Rótulo padrão para 2 adultos</label>
+          <select id="label2A">
+            <option value="auto" selected>Automático ("02 adultos")</option>
+            <option value="casal">Usar "Casal"</option>
+            <option value="adultos">Sempre "02 adultos"</option>
+          </select>
+        </div>
+        <div>
+          <label>Observações gerais (opcional)</label>
+          <input id="obs" placeholder="Ex.: prefere andar superior; berço; etc." />
+        </div>
+      </div>
+
+      <div style="margin-top:10px">
+        <div class="roomHead"><div class="roomTitle">Quartos</div>
+          <div class="actions">
+            <button id="addRoom" class="ghostBtn">+ Adicionar quarto</button>
+          </div>
+        </div>
+        <div id="rooms"></div>
+      </div>
+
+      <div class="hint" style="margin-top:8px">
+        • Valor base cobre até 2 pessoas (ou “Casal”, se você escolher). • 1 bebê até 3 anos é cortesia por quarto; se houver 2 bebês, 1 conta como extra. • Pessoa extra tem valor por noite e varia por período. • Finais de semana e pacotes podem ter **mínimo de diárias** e **restrições de chegada/saída** (CTA/CTD) lidas do Cloudbeds ao importar CSV.
+      </div>
+      <div class="actions" style="margin-top:12px">
+        <button class="primary" id="calc">Calcular orçamento</button>
+        <button id="limpar" class="secondary">Limpar</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Resumo</h2>
+      <div id="alert"></div>
+      <div id="resumo" class="muted">Defina as datas e pelo menos 1 quarto, depois clique em <b>Calcular</b>.</div>
+      <table id="tabela" style="display:none"></table>
+      <div style="margin-top:12px"><div class="badge" id="regras"></div></div>
+
+      <details class="tests">
+        <summary>▶ Testes rápidos (debug)</summary>
+        <div class="actions" style="margin-top:8px"><button id="run-tests" class="secondary">Executar testes</button></div>
+        <ul id="tests-log"></ul>
+      </details>
+    </section>
+
+    <section class="card" style="grid-column:1/-1">
+      <h2>Mensagem pronta (copiar e colar)</h2>
+      <textarea id="mensagem" readonly placeholder="A mensagem do orçamento aparece aqui..."></textarea>
+      <div class="actions" style="margin-top:10px">
+        <button id="copyBtn">Copiar mensagem</button>
+      </div>
+      <div class="hint" style="margin-top:8px">Mensagem formatada para WhatsApp. Ajuste o texto livremente antes de enviar.</div>
+    </section>
+  </main>
+
+  <!-- Modal de Configurações -->
+  <dialog id="cfg">
+    <div class="dlgHead">
+      <strong>Configurações</strong>
+      <button id="cfgClose" class="ghostBtn">Fechar</button>
+    </div>
+    <div class="dlgBody">
+      <div class="tabs">
+        <button class="tab active" data-tab="csv">Importar do Cloudbeds (CSV)</button>
+        <button class="tab" data-tab="backup">Backup (Exportar/Importar JSON)</button>
+      </div>
+
+      <div id="tab-csv">
+        <div class="twoCols">
+          <div>
+            <label>Arquivo CSV exportado do Cloudbeds</label>
+            <input type="file" id="csvFile" accept=".csv,text/csv" />
+            <div class="hint" style="margin-top:6px">Aceita separador vírgula ou ponto‑e‑vírgula; detecta datas em <span class="kbd">DD/MM/AAAA</span> ou <span class="kbd">AAAA-MM-DD</span>. Lê linhas: <em>Tarifário base</em>, <em>Preço para o adulto 3</em>, <em>Estadia mínima</em>, <em>Fechado para Chegada</em>, <em>Fechado para Partida</em>.</div>
+            <div class="actions" style="margin-top:10px">
+              <button id="csvParse" class="secondary">Pré-visualizar</button>
+              <button id="csvApply">Aplicar</button>
+            </div>
+          </div>
+          <div>
+            <label>Prévia</label>
+            <div id="csvPreview" class="preview muted">Carregue um CSV e clique em Pré‑visualizar.</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-backup" style="display:none">
+        <div class="twoCols">
+          <div>
+            <label>Exportar JSON do tarifário importado</label>
+            <button id="btnExport" class="secondary">Exportar JSON</button>
+            <div class="hint" style="margin-top:6px">Inclui preços por data, extra por data, mínimo de diárias, CTA/CTD.</div>
+          </div>
+          <div>
+            <label>Importar JSON</label>
+            <input type="file" id="jsonFile" accept="application/json,.json" />
+            <div class="actions" style="margin-top:10px"><button id="btnImport">Importar JSON</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+<script>
+/*********************
+ * Utils de data
+ *********************/
+const fmtBR = (n) => n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+function toLocalDate(v){
+  if (v instanceof Date) return new Date(v.getFullYear(), v.getMonth(), v.getDate());
+  if (typeof v === 'string'){
+    const m = v.match(/^(\d{4})-(\d{2})-(\d{2})$/); // YYYY-MM-DD
+    if (m){ return new Date(+m[1], +m[2]-1, +m[3]); }
+    const m2 = v.match(/^(\d{2})\/(\d{2})\/(\d{4})$/); // DD/MM/YYYY
+    if (m2){ return new Date(+m2[3], +m2[2]-1, +m2[1]); }
+    const d = new Date(v); return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  }
+  const d = new Date(v); return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+function ymd(v){ const d = toLocalDate(v); const y=d.getFullYear(); const m=String(d.getMonth()+1).padStart(2,'0'); const da=String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${da}` }
+const addDays = (v, n)=>{ const d = toLocalDate(v); d.setDate(d.getDate()+n); return d }
+const dow = d=>toLocalDate(d).getDay()
+const isWknd = d=>[5,6].includes(dow(d))
+
+/*********************
+ * Tarifas padrão (fallback)
+ *********************/
+const tarifas = [
+  {from:'2025-07-13', to:'2025-07-31', tipo:'semana_fds', semana:220, fds:250, extra:90},
+  {from:'2025-08-01', to:'2025-08-31', tipo:'semana_fds', semana:290, fds:340, extra:90},
+  {from:'2025-09-01', to:'2025-10-30', tipo:'semana_fds', semana:350, fds:400, extra:90},
+  {from:'2025-10-31', to:'2025-11-13', tipo:'semana_fds', semana:380, fds:430, extra:90},
+  {from:'2025-11-15', to:'2025-11-19', tipo:'semana_fds', semana:400, fds:450, extra:90},
+  {from:'2025-11-23', to:'2025-12-18', tipo:'semana_fds', semana:380, fds:430, extra:90},
+  {from:'2025-12-19', to:'2025-12-25', tipo:'fixo', valor:600, extra:110, minNoites:3, label:'Natal (mín. 3 diárias)'},
+  {from:'2025-12-26', to:'2025-12-29', tipo:'fixo', valor:800, extra:110, minNoites:3, label:'Entre Natal e Réveillon (mín. 3 diárias)'},
+  {from:'2026-01-02', to:'2026-01-04', tipo:'fixo', valor:800, extra:110, minNoites:3, label:'02–04/01 (mín. 3)'},
+  {from:'2026-01-05', to:'2026-01-10', tipo:'fixo', valor:600, extra:110, minNoites:2, label:'05–10/01 (mín. 2)'},
+  {from:'2026-01-11', to:'2026-01-31', tipo:'semana_fds', semana:530, fds:580, extra:110},
+]
+const pacoteNov = {from:'2025-11-20', to:'2025-11-23', noites:3, valorCasal:1500, extra:90}
+function extraPadrao(dateStr){ return (dateStr >= '2025-12-01') ? 110 : 90 }
+function within(d, a, b){ return (d>=a && d<=b) }
+
+function tarifaFallback(date){
+  const s = ymd(date)
+  if (s>='2025-12-29' && s<='2026-01-02') return {valor:0, extra:extraPadrao(s), especial:true, label:'Réveillon — pacotes fechados'}
+  for(const t of tarifas){
+    if (within(s, t.from, t.to)){
+      if (t.tipo==='fixo') return {valor:t.valor, extra:t.extra ?? extraPadrao(s), minNoites:t.minNoites||0, label:t.label}
+      return {valor: isWknd(date) ? t.fds : t.semana, extra:t.extra ?? extraPadrao(s), minNoites:0}
+    }
+  }
+  return {valor:0, extra:extraPadrao(s), fora:true}
+}
+
+/*********************
+ * Banco diário importado (Cloudbeds) — localStorage
+ *********************/
+const LSKEY = 'vm_daily_rates_v1';
+function loadDaily(){ try{ return JSON.parse(localStorage.getItem(LSKEY)||'{}') }catch{ return {} } }
+function saveDaily(map){ localStorage.setItem(LSKEY, JSON.stringify(map)) }
+let DAILY = loadDaily(); // { 'YYYY-MM-DD': {base, extra, minStay, cta, ctd} }
+
+function rateFromDaily(date){
+  const s = ymd(date)
+  if (DAILY[s] && (DAILY[s].base>0 || DAILY[s].extra>0 || DAILY[s].minStay>0 || DAILY[s].cta || DAILY[s].ctd)){
+    const r = DAILY[s]
+    return {valor: r.base>0? r.base : tarifaFallback(date).valor, extra: r.extra>0? r.extra : extraPadrao(s), minNoites: r.minStay||0, cta: !!r.cta, ctd: !!r.ctd}
+  }
+  return tarifaFallback(date)
+}
+
+/*********************
+ * CSV Parser (Cloudbeds)
+ *********************/
+function detectDelim(line){
+  const c = (line.match(/,/g)||[]).length
+  const sc = (line.match(/;/g)||[]).length
+  return sc>c? ';' : ','
+}
+function parseNumber(cell){
+  if (cell==null) return null
+  let s = String(cell).trim()
+  if (!s) return null
+  s = s.replace(/R\$|\s/g,'').replace(/\./g,'').replace(/,/,'.')
+  const n = Number(s)
+  return Number.isFinite(n)? n : null
+}
+function parseBool(cell){
+  if (cell==null) return false
+  const s = String(cell).trim().toLowerCase()
+  if (!s) return false
+  return ['1','true','sim','yes','y','s','fechado'].includes(s)
+}
+const ROW_ALIASES = [
+  {keys:['tarifário base','tarifario base','tarifa base','rate','base rate'], field:'base'},
+  {keys:['preço para o adulto 3','preco para o adulto 3','adulto 3','adulto extra','preço adulto adicional','additional adult','extra'], field:'extra'},
+  {keys:['estadia mínima','minimo de estadia','mínimo de estadia','min stay','minimum stay'], field:'minStay'},
+  {keys:['fechado para chegada','cta','closed to arrival'], field:'cta', bool:true},
+  {keys:['fechado para partida','ctd','closed to departure'], field:'ctd', bool:true},
+]
+function isDateToken(s){
+  return /^(\d{2})\/(\d{2})\/(\d{4})$/.test(s) || /^(\d{4})-(\d{2})-(\d{2})$/.test(s)
+}
+function normalizeDateToken(s){
+  if (/^(\d{2})\/(\d{2})\/(\d{4})$/.test(s)){
+    const [d,m,y] = s.split('/')
+    return `${y}-${m}-${d}`
+  }
+  if (/^(\d{4})-(\d{2})-(\d{2})$/.test(s)) return s
+  return null
+}
+function parseCSVText(text){
+  const lines = text.split(/\r?\n/).filter(l=>l.trim().length>0)
+  if(lines.length===0) throw new Error('CSV vazio')
+  const delim = detectDelim(lines[0])
+  const rows = lines.map(l=>l.split(delim))
+
+  // Encontrar a linha com datas (precisa ter >=3 datas)
+  let dateRowIdx = -1
+  for (let i=0;i<rows.length;i++){
+    const hits = rows[i].map(x=>isDateToken(String(x).trim())).filter(Boolean).length
+    if (hits>=3){ dateRowIdx = i; break }
+  }
+  if (dateRowIdx<0) throw new Error('Não encontrei linha de datas (cabeçalho com 3+ datas).')
+
+  const dates = rows[dateRowIdx].map(x=>normalizeDateToken(String(x).trim()))
+  // Alguns exports trazem um cabeçalho textual na primeira célula — removemos se não for data
+  let startCol = 0
+  if (!dates[0]){ startCol = 1 }
+
+  const dateList = dates.slice(startCol).map(x=>x||'').filter(Boolean)
+  if (dateList.length<1) throw new Error('Sem datas reconhecidas no cabeçalho.')
+
+  const out = {} // s -> {base, extra, minStay, cta, ctd}
+  for (let r=dateRowIdx+1; r<rows.length; r++){
+    const label = String(rows[r][0]||'').trim().toLowerCase()
+    if (!label) continue
+    let field=null, isBool=false
+    for (const a of ROW_ALIASES){
+      if (a.keys.some(k=>label.includes(k))){ field=a.field; isBool=!!a.bool; break }
+    }
+    if (!field) continue
+
+    // varrer colunas
+    for (let c=0; c<dateList.length; c++){
+      const s = dateList[c]
+      const raw = rows[r][c+startCol]
+      if (!out[s]) out[s] = {base:null, extra:null, minStay:null, cta:false, ctd:false}
+      if (isBool){ out[s][field] = parseBool(raw) }
+      else if (field==='minStay') { const n = parseNumber(raw); if (n!=null) out[s].minStay = Math.round(n) }
+      else if (field==='base') { const n = parseNumber(raw); if (n!=null) out[s].base = n }
+      else if (field==='extra'){ const n = parseNumber(raw); if (n!=null) out[s].extra = n }
+    }
+  }
+  return out
+}
+
+/*********************
+ * UI de Quartos
+ *********************/
+const roomsEl = document.getElementById('rooms');
+let roomSeq = 0;
+function roomTemplate(id){
+  return `<div class=\"room\" data-room=\"${id}\">\n    <div class=\"roomHead\">\n      <div class=\"roomTitle\">Quarto #${id}</div>\n      <div class=\"actions\">\n        <button class=\"ghostBtn\" data-dup=\"${id}\">Duplicar</button>\n        <button class=\"ghostBtn\" data-del=\"${id}\">Remover</button>\n      </div>\n    </div>\n    <div class=\"miniRow\">\n      <div>\n        <label>Tipo de suíte</label>\n        <select data-field=\"suite\">\n          <option value=\"varanda\" selected>Com varanda (base)</option>\n          <option value=\"sem\">Sem varanda (−R$20/noite)</option>\n        </select>\n      </div>\n      <div>\n        <label>Adultos</label>\n        <input type=\"number\" data-field=\"adultos\" min=\"1\" value=\"2\" />\n      </div>\n      <div>\n        <label>Crianças (≥4)</label>\n        <input type=\"number\" data-field=\"criancas\" min=\"0\" value=\"0\" />\n      </div>\n      <div>\n        <label>Bebês (≤3)</label>\n        <input type=\"number\" data-field=\"bebes\" min=\"0\" value=\"0\" />\n      </div>\n      <div>\n        <label>Rótulo 2A</label>\n        <select data-field=\"rotulo2A\">\n          <option value=\"default\">Padrão (usar global)</option>\n          <option value=\"casal\">Forçar \"Casal\"</option>\n          <option value=\"adultos\">Forçar \"02 adultos\"</option>\n        </select>\n      </div>\n      <div>\n        <label>Rótulo customizado</label>\n        <input data-field=\"custom\" placeholder=\"Ex.: 3 solteiros, Casal + 1 adulto\" />\n      </div>\n    </div>\n  </div>`
+}
+function addRoom(copyOf){
+  roomSeq++;
+  const id = roomSeq;
+  const div = document.createElement('div');
+  div.innerHTML = roomTemplate(id);
+  const el = div.firstElementChild;
+  roomsEl.appendChild(el);
+  if(copyOf){
+    el.querySelector('[data-field="suite"]').value = copyOf.suite;
+    el.querySelector('[data-field="adultos"]').value = copyOf.adultos;
+    el.querySelector('[data-field="criancas"]').value = copyOf.criancas;
+    el.querySelector('[data-field="bebes"]').value = copyOf.bebes;
+    el.querySelector('[data-field="rotulo2A"]').value = copyOf.rotulo2A;
+    el.querySelector('[data-field="custom"]').value = copyOf.custom;
+  }
+}
+function readRooms(){
+  const out=[];
+  roomsEl.querySelectorAll('[data-room]').forEach(box=>{
+    out.push({
+      id: +box.getAttribute('data-room'),
+      suite: box.querySelector('[data-field="suite"]').value,
+      adultos: +box.querySelector('[data-field="adultos"]').value,
+      criancas: +box.querySelector('[data-field="criancas"]').value,
+      bebes: +box.querySelector('[data-field="bebes"]').value,
+      rotulo2A: box.querySelector('[data-field="rotulo2A"]').value,
+      custom: box.querySelector('[data-field="custom"]').value.trim()
+    })
+  })
+  return out;
+}
+roomsEl.addEventListener('click', (e)=>{
+  const dup = e.target.getAttribute('data-dup');
+  const del = e.target.getAttribute('data-del');
+  if(dup){ const src = readRooms().find(r=>r.id===+dup); if(src) addRoom(src); }
+  if(del){ const box = roomsEl.querySelector(`[data-room="${del}"]`); if(box) box.remove(); }
+});
+
+document.getElementById('addRoom').addEventListener('click', ()=> addRoom());
+addRoom();
+
+/*********************
+ * Cálculo (usa DAILY quando existir, senão fallback)
+ *********************/
+function compLabel({adultos,criancas}, prefer2A){
+  const kids = criancas>0? ` + ${String(criancas).padStart(2,'0')} criança(s)` : ''
+  if (adultos===2){ if (prefer2A==='casal') return `Casal${kids}`; return `${String(adultos).padStart(2,'0')} adulto(s)${kids}`; }
+  return `${String(adultos).padStart(2,'0')} adulto(s)${kids}`;
+}
+
+function* noitesIter(ci, co){ let d = toLocalDate(ci); const coS = ymd(co); while (ymd(d) < coS) { yield toLocalDate(d); d = addDays(d,1) } }
+
+function calc(){
+  const ci = document.getElementById('checkin').value
+  const co = document.getElementById('checkout').value
+  const label2A = document.getElementById('label2A').value
+  const obs = document.getElementById('obs').value.trim()
+  const out = document.getElementById('resumo')
+  const tab = document.getElementById('tabela')
+  const msg = document.getElementById('mensagem')
+  const alert = document.getElementById('alert')
+  const regras = document.getElementById('regras')
+
+  alert.innerHTML=''; tab.style.display='none'; tab.innerHTML=''; msg.value=''; out.innerHTML=''; regras.textContent='';
+
+  const rooms = readRooms();
+  if(!ci||!co){ out.innerHTML='<span class="warn">Escolha check-in e check-out.</span>'; return }
+  if (ymd(ci) >= ymd(co)) { out.innerHTML='<span class="err">Check-out deve ser após o check-in.</span>'; return }
+  if (rooms.length===0){ out.innerHTML='<span class="warn">Adicione ao menos 1 quarto.</span>'; return }
+
+  // Regras CTA/CTD & min noites pelo dia de entrada/saída (via DAILY)
+  const ciRate = rateFromDaily(ci)
+  const coRate = rateFromDaily(co)
+  if (ciRate.cta){ alert.innerHTML += `<div class="err">⛔ O dia de check-in (${ci.split('-').reverse().join('/')}) está <b>fechado para chegada</b> (CTA).</div>`; return }
+  if (coRate.ctd){ alert.innerHTML += `<div class="err">⛔ O dia de check-out (${co.split('-').reverse().join('/')}) está <b>fechado para partida</b> (CTD).</div>`; return }
+
+  // Construção das noites
+  let linhas = []
+  let noites = 0
+  let foraTabela = false
+  let temReveillon = false
+  let minEntrada = ciRate.minNoites||0
+
+  for (const d of noitesIter(ci, co)){
+    noites++
+    const r = rateFromDaily(d)
+    if (r.especial){ temReveillon = true }
+    if (r.fora){ foraTabela = true }
+    linhas.push({data: ymd(d), base:r.valor, extraVlr:r.extra, min:r.minNoites||0})
+  }
+
+  if (minEntrada>0 && noites < minEntrada){
+    alert.innerHTML += `<div class="err">⛔ Estadia mínima de <b>${minEntrada} diárias</b> para a data de entrada (${ci.split('-').reverse().join('/')}).</div>`; return
+  }
+
+  // Tabela por noite (preview de base/extra)
+  const hdr = `<tr><th>Data</th><th>Dia</th><th>Tarifa base (casal)</th><th>Extra/pessoa</th></tr>`
+  const rows = linhas.map(l=>{
+    const dt = toLocalDate(l.data)
+    const dia = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][dow(dt)]
+    return `<tr><td style="white-space:nowrap">${l.data}</td><td>${dia}</td><td>${fmtBR(l.base)}</td><td>${fmtBR(l.extraVlr)}</td></tr>`
+  }).join('')
+  tab.innerHTML = `<thead>${hdr}</thead><tbody>${rows}</tbody><tfoot><tr><td colspan="2">Noites</td><td colspan="2">${noites}</td></tr></tfoot>`
+  tab.style.display='table'
+
+  // Cálculo por quarto
+  function calcRoom(r){
+    const totalPessoas = r.adultos + r.criancas + r.bebes
+    const bebesCortesia = Math.min(r.bebes, 1)
+    const elegiveisBase = 2 + bebesCortesia
+    const extras = Math.max(0, totalPessoas - elegiveisBase)
+
+    let totalBase = 0, totalExtras = 0
+    let pacoteCount = 0
+
+    for(const l of linhas){
+      if (within(l.data, pacoteNov.from, pacoteNov.to)) pacoteCount++
+      totalBase += l.base
+      totalExtras += l.extraVlr * extras
+    }
+
+    const ajusteSuite = (r.suite==='sem') ? -20*noites : 0
+
+    if (pacoteCount===pacoteNov.noites){
+      const baseFora = linhas.filter(l=>!(within(l.data, pacoteNov.from, pacoteNov.to))).reduce((a,b)=>a+b.base,0)
+      totalBase = baseFora + pacoteNov.valorCasal
+      const totalExtrasFora = linhas.filter(l=>!(within(l.data, pacoteNov.from, pacoteNov.to))).reduce((a,b)=>a + b.extraVlr*extras,0)
+      const totalExtrasPac = extras * pacoteNov.extra * pacoteNov.noites
+      totalExtras = totalExtrasFora + totalExtrasPac
+    } else if (pacoteCount>0 && pacoteCount<pacoteNov.noites){
+      alert.innerHTML += `<div class="warn">⚠️ Período 20–23/11: estadia parcial. Use o mínimo do pacote se desejar forçar o valor (manual).</div>`
+    }
+
+    const subtotal = totalBase + totalExtras + ajusteSuite
+
+    let prefer2A = (r.rotulo2A==='default') ? (label2A==='casal'?'casal':'adultos') : r.rotulo2A
+    const descr = r.custom || compLabel(r, prefer2A)
+
+    return { subtotal, descr, suite:r.suite }
+  }
+
+  const roomResults = readRooms().map(calcRoom)
+  const totalGeral = roomResults.reduce((a,b)=>a+b.subtotal,0)
+
+  // Resumo visual
+  const msgAlert = foraTabela ? '⚠️ Há datas fora do tarifário padrão (usando fallback).' : ''
+  out.innerHTML = `
+    <div>${roomResults.length} quarto(s) · Noites: ${noites}</div>
+    <div class="tot">Total estimado geral: <b>${fmtBR(totalGeral)}</b></div>
+    <div class="muted">${msgAlert}</div>
+  `
+
+  // Mensagem pronta
+  const pretty = (s)=>s.split('-').reverse().join('/')
+  const ciTxt = pretty(ci), coTxt = pretty(co)
+  const headerTxt = `O valor total das ${String(noites).padStart(2,'0')} diárias (${ciTxt} a ${coTxt}) fica por:`
+  const faixa = (suite)=> suite==='sem' ? 'suíte sem varanda' : 'suíte com varanda'
+  const linhasPorQuarto = roomResults.map((r)=>`R$ ${r.subtotal.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})} na ${faixa(r.suite)} para ${r.descr}.`).join('\n')
+
+  const inclusos = [
+    'Café da manhã (07:30–10:00)',
+    'Serviço de camareira (limpeza e troca periódica de roupa de cama e banho)',
+    'Serviço de Wi‑Fi em toda área da pousada',
+    'Estacionamento (externo e monitorado 24h, uma vaga por suíte)',
+    'Piscina (10h às 22h)',
+    'Todas as suítes possuem TV a cabo, frigobar e ar‑condicionado'
+  ]
+  const politica = [
+    'Reserva confirmada após pagamento de 50% (Pix ou cartão).',
+    '5% OFF à vista no Pix, se solicitar no ato.',
+    'Saldo restante no check‑in. Parcelamos em até 5x sem juros no cartão.',
+    'Política de cancelamento conforme regras vigentes.'
+  ]
+
+  const obsTxt = obs? `\nObs.: ${obs}\n` : ''
+
+  document.getElementById('mensagem').value = (
+`${headerTxt}\n\n${linhasPorQuarto}\n`+
+`Valor de orçamento assegurado de reajustes por até 24h!\n\n`+
+`Na sua reserva estará incluso:\n• ${inclusos.join('\n• ')}\n\n`+
+`Pagamento e condições:\n• ${politica.join('\n• ')}\n${obsTxt}`+
+`🕑 Check-in (entrada) a partir das 14h\n🕛 Check-out (saída) até meio dia.`)
+
+  if (temReveillon){ alert.innerHTML += `<div class="warn">🎆 Réveillon possui pacotes: 29/12–02/01 (4 diárias R$ 4.700) ou 30/12–02/01 (3 diárias R$ 3.900). Extensões usam valor de 4 diárias. Trate manualmente.</div>` }
+}
+
+document.getElementById('calc').addEventListener('click', calc)
+
+document.getElementById('limpar').addEventListener('click', ()=>{
+  ['checkin','checkout','obs'].forEach(id=>document.getElementById(id).value='')
+  document.getElementById('label2A').value='auto'
+  roomsEl.innerHTML=''; roomSeq=0; addRoom();
+  document.getElementById('resumo').innerHTML='Formulário limpo.'
+  document.getElementById('mensagem').value=''
+  document.getElementById('tabela').style.display='none'
+  document.getElementById('alert').innerHTML=''
+  document.getElementById('regras').textContent=''
+})
+
+// Copiar com feedback
+const copyBtn = document.getElementById('copyBtn')
+copyBtn.addEventListener('click', async ()=>{
+  const txt = document.getElementById('mensagem').value
+  try{
+    await navigator.clipboard.writeText(txt)
+    const old = copyBtn.textContent; copyBtn.textContent='Copiado ✓'; copyBtn.classList.add('copyDone')
+    setTimeout(()=>{copyBtn.textContent=old; copyBtn.classList.remove('copyDone')},1200)
+  }catch(e){ alert('Não foi possível copiar. Selecione o texto e copie manualmente.') }
+})
+
+/*********************
+ * Configurações (dialog + abas)
+ *********************/
+const dlg = document.getElementById('cfg')
+const btnCfg = document.getElementById('btnCfg')
+const btnClose = document.getElementById('cfgClose')
+btnCfg.addEventListener('click', ()=> dlg.showModal())
+btnClose.addEventListener('click', ()=> dlg.close())
+
+const tabs = document.querySelectorAll('.tab')
+function activateTab(id){
+  tabs.forEach(t=>t.classList.toggle('active', t.dataset.tab===id))
+  document.getElementById('tab-csv').style.display = id==='csv'?'block':'none'
+  document.getElementById('tab-backup').style.display = id==='backup'?'block':'none'
+}
+activateTab('csv')
+for (const t of tabs){ t.addEventListener('click', ()=> activateTab(t.dataset.tab)) }
+
+/*********************
+ * Importar CSV
+ *********************/
+const csvFile = document.getElementById('csvFile')
+const csvPreview = document.getElementById('csvPreview')
+let PARSED = null
+
+function showPreview(map){
+  const keys = Object.keys(map).sort()
+  if (keys.length===0){ csvPreview.innerHTML = '<span class="warn">Nenhuma data reconhecida no CSV.</span>'; return }
+  const min = keys[0], max = keys[keys.length-1]
+  const sample = keys.slice(0,8).map(k=>`${k}: base=${map[k].base??'-'}, extra=${map[k].extra??'-'}, min=${map[k].minStay??'-'}, CTA=${map[k].cta?1:0}, CTD=${map[k].ctd?1:0}`).join('<br>')
+  csvPreview.innerHTML = `Dias lidos: <b>${keys.length}</b><br>De <b>${min}</b> a <b>${max}</b><hr>${sample}`
+}
+
+document.getElementById('csvParse').addEventListener('click', async ()=>{
+  const file = csvFile.files && csvFile.files[0]
+  if (!file){ csvPreview.innerHTML = '<span class="warn">Selecione um arquivo CSV.</span>'; return }
+  const text = await file.text()
+  try{
+    PARSED = parseCSVText(text)
+    showPreview(PARSED)
+  }catch(e){ csvPreview.innerHTML = `<span class="err">Erro ao ler CSV: ${e.message}</span>` }
+})
+
+document.getElementById('csvApply').addEventListener('click', ()=>{
+  if (!PARSED){ csvPreview.innerHTML = '<span class="warn">Faça a pré‑visualização antes de aplicar.</span>'; return }
+  DAILY = Object.assign({}, DAILY, PARSED)
+  saveDaily(DAILY)
+  csvPreview.innerHTML = '<span class="ok">Tarifário aplicado e salvo.</span>'
+})
+
+/*********************
+ * Backup JSON
+ *********************/
+const btnExport = document.getElementById('btnExport')
+btnExport.addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify(DAILY,null,2)], {type:'application/json'})
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a'); a.href=url; a.download='tarifario-viavamar.json'; a.click(); URL.revokeObjectURL(url)
+})
+const jsonFile = document.getElementById('jsonFile')
+const btnImport = document.getElementById('btnImport')
+btnImport.addEventListener('click', async ()=>{
+  const f = jsonFile.files && jsonFile.files[0]
+  if (!f) return
+  try{
+    const text = await f.text()
+    const data = JSON.parse(text)
+    if (typeof data!== 'object') throw new Error('JSON inválido')
+    DAILY = data; saveDaily(DAILY)
+    alert('JSON importado com sucesso!')
+  }catch(e){ alert('Erro ao importar JSON: '+e.message) }
+})
+
+/*********************
+ * Testes
+ *********************/
+function runTests(){
+  const logEl = document.getElementById('tests-log');
+  logEl.innerHTML='';
+  const add = (ok,msg)=>{ const li=document.createElement('li'); li.textContent=(ok?'✅ ':'❌ ')+msg; logEl.appendChild(li)}
+
+  try{
+    const s = '2025-08-09';
+    add(ymd(s)==='2025-08-09', 'ymd(string) mantém a data');
+    add(ymd(new Date('2025-08-09'))==='2025-08-09', 'ymd(Date) não sofre com fuso');
+    const nights = [...noitesIter('2025-08-09','2025-08-12')].map(ymd);
+    add(nights.length===3 && nights[0]==='2025-08-09' && nights[2]==='2025-08-11', 'noitesIter 3 noites (09,10,11)');
+
+    // Fallback tarifa
+    const t = tarifaFallback(new Date('2025-08-06'));
+    add(typeof t.valor==='number', 'tarifaFallback retorna valor numérico');
+
+    // Parser de CSV — smoke test
+    const fake = 'x;09/08/2025;10/08/2025\nTarifário base;300;320\nPreço para o adulto 3;90;90\nEstadia mínima;2;2\nFechado para Chegada;0;1\nFechado para Partida;0;0\n'
+    const parsed = parseCSVText(fake)
+    add(parsed['2025-08-09'].base===300 && parsed['2025-08-10'].extra===90, 'parseCSVText lê base/extra')
+    add(parsed['2025-08-10'].cta===true && parsed['2025-08-10'].ctd===false, 'parseCSVText lê CTA/CTD')
+
+  }catch(e){ add(false, 'Erro inesperado nos testes: '+e.message) }
+}
+const testsBtn = document.getElementById('run-tests');
+if (testsBtn) testsBtn.addEventListener('click', runTests)
+</script>
+</body>
+</html>
