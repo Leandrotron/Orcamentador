@@ -1,0 +1,10 @@
+# pastas que não quero no GitHub
+node_modules/
+dist/
+build/
+.vscode/
+__pycache__/
+
+# arquivos que não quero no GitHub
+*.log
+.env
