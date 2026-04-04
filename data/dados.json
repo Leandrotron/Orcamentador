@@ -1,239 +1,8 @@
 {
-  "version": "2026-04-03-01",
-  "updatedAt": "2026-04-03",
-  "messageTemplate": "Olá! Segue a simulação da hospedagem solicitada.\n\nQualquer dúvida ou ajuste, estou à disposição.",
+  "version": "2026-04-04-01",
+  "updatedAt": "2026-04-04",
+  "messageTemplate": "*Na sua reserva estará incluso:*\n• Café da manhã (07:30–10:00)\n• Serviço de camareira (limpeza e troca periódica de roupa de cama e banho)\n• Serviço de Wi‑Fi em toda área da pousada\n• Estacionamento (externo e monitorado 24h, uma vaga por suíte)\n• Piscina (10h às 22h)\n• Todas as suítes possuem TV a cabo, frigobar e ar‑condicionado\n\n*Pagamento e condições:*\n• Reserva confirmada após adiantamento de 50% (Pix ou cartão).\n• Tanto o adiantamento quanto o saldo no check‑in podem ser parcelados em até 5x sem juros no cartão.\n• Saldo restante no check‑in.\n• Política de cancelamento conforme regras vigentes.\n\n*🕑 Check-in (entrada) a partir das 14h*\n*🕛 Check-out (saída) até meio dia.*",
   "daily": {
-    "2026-03-02": {
-      "base": 320,
-      "extra": 90,
-      "minStay": 0,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-03-03": {
-      "base": 320,
-      "extra": 90,
-      "minStay": 0,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-03-04": {
-      "base": 320,
-      "extra": 90,
-      "minStay": 0,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-03-05": {
-      "base": 320,
-      "extra": 90,
-      "minStay": 0,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-03-06": {
-      "base": 400,
-      "extra": 90,
-      "minStay": 2,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-03-07": {
-      "base": 400,
-      "extra": 90,
-      "minStay": 2,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-03-08": {
-      "base": 320,
-      "extra": 90,
-      "minStay": 0,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-03-09": {
-      "base": 320,
-      "extra": 90,
-      "minStay": 0,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-03-10": {
-      "base": 320,
-      "extra": 90,
-      "minStay": 0,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-03-11": {
-      "base": 320,
-      "extra": 90,
-      "minStay": 0,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-03-12": {
-      "base": 320,
-      "extra": 90,
-      "minStay": 0,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-03-13": {
-      "base": 400,
-      "extra": 90,
-      "minStay": 2,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-03-14": {
-      "base": 400,
-      "extra": 90,
-      "minStay": 2,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-03-15": {
-      "base": 320,
-      "extra": 90,
-      "minStay": 0,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-03-16": {
-      "base": 320,
-      "extra": 90,
-      "minStay": 0,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-03-17": {
-      "base": 320,
-      "extra": 90,
-      "minStay": 0,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-03-18": {
-      "base": 320,
-      "extra": 90,
-      "minStay": 0,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-03-19": {
-      "base": 320,
-      "extra": 90,
-      "minStay": 0,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-03-20": {
-      "base": 400,
-      "extra": 90,
-      "minStay": 2,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-03-21": {
-      "base": 400,
-      "extra": 90,
-      "minStay": 2,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-03-22": {
-      "base": 320,
-      "extra": 90,
-      "minStay": 0,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-03-23": {
-      "base": 320,
-      "extra": 90,
-      "minStay": 0,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-03-24": {
-      "base": 320,
-      "extra": 90,
-      "minStay": 0,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-03-25": {
-      "base": 320,
-      "extra": 90,
-      "minStay": 0,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-03-26": {
-      "base": 320,
-      "extra": 90,
-      "minStay": 0,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-03-27": {
-      "base": 400,
-      "extra": 90,
-      "minStay": 2,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-03-28": {
-      "base": 400,
-      "extra": 90,
-      "minStay": 2,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-03-29": {
-      "base": 320,
-      "extra": 90,
-      "minStay": 0,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-03-30": {
-      "base": 320,
-      "extra": 90,
-      "minStay": 0,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-03-31": {
-      "base": 320,
-      "extra": 90,
-      "minStay": 0,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-04-01": {
-      "base": 320,
-      "extra": 90,
-      "minStay": 0,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-04-02": {
-      "base": 500,
-      "extra": 90,
-      "minStay": 3,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-04-03": {
-      "base": 500,
-      "extra": 90,
-      "minStay": 3,
-      "cta": 1,
-      "ctd": 1
-    },
     "2026-04-04": {
       "base": 500,
       "extra": 90,
@@ -2552,6 +2321,237 @@
       "ctd": 1
     },
     "2027-03-01": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-03-02": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-03-03": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-03-04": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-03-05": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-03-06": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-03-07": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-03-08": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-03-09": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-03-10": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-03-11": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-03-12": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-03-13": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-03-14": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-03-15": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-03-16": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-03-17": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-03-18": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-03-19": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-03-20": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-03-21": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-03-22": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-03-23": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-03-24": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-03-25": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-03-26": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-03-27": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-03-28": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-03-29": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-03-30": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-03-31": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-04-01": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-04-02": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-04-03": {
       "base": 0,
       "extra": 0,
       "minStay": 0,
