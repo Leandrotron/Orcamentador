@@ -1,7 +1,7 @@
 {
   "version": "2026-04-04-01",
   "updatedAt": "2026-04-04",
-  "messageTemplate": "Olá! Segue a simulação da hospedagem solicitada.\n\nQualquer dúvida ou ajuste, estou à disposição.",
+  "messageTemplate": "*Na sua reserva estará incluso:*\n• Café da manhã (07:30–10:00)\n• Serviço de camareira (limpeza e troca periódica de roupa de cama e banho)\n• Serviço de Wi‑Fi em toda área da pousada\n• Estacionamento (externo e monitorado 24h, uma vaga por suíte)\n• Piscina (10h às 22h)\n• Todas as suítes possuem TV a cabo, frigobar e ar‑condicionado\n\n*Pagamento e condições:*\n• Reserva confirmada após adiantamento de 50% (Pix ou cartão).\n• Tanto o adiantamento quanto o saldo no check‑in podem ser parcelados em até 5x sem juros no cartão.\n• Saldo restante no check‑in.\n• Política de cancelamento conforme regras vigentes.\n\n*🕑 Check-in (entrada) a partir das 14h*\n*🕛 Check-out (saída) até meio dia.*",
   "daily": {
     "2026-04-04": {
       "base": 500,
