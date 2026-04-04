@@ -1,41 +1,61 @@
 # Copilot Instructions — Orçamentador Pousada Viva Mar
 
-## Project Overview
+## 🧠 Project Overview
 
-**Orçamentador** is an internal pricing and quote generation tool for Pousada Viva Mar, a Brazilian coastal inn.
+**Orçamentador** is an internal web-based booking quote generator used by Pousada Viva Mar.
 
-The system is built around a **JSON-based pricing engine**, where all rates, restrictions, and rules are pre-processed and stored in `dados.json`.
+It is a **single-page application (SPA)** built with:
+- Vanilla HTML
+- Vanilla JavaScript
+- LocalStorage
+- GitHub as data source
 
-The application is a lightweight HTML/JavaScript interface (optionally wrapped in Electron) that generates quotes and formats them for WhatsApp communication.
-
-There is no backend. All computation happens locally in the browser or Electron environment.
-
----
-
-## Core Architecture
-
-- `dados.json` is the **single source of truth**
-- All pricing rules are **date-based and precomputed**
-- The frontend only reads and applies rules
-- CSV is NOT used at runtime (only in converter stage)
-- GitHub is used as a **distribution layer for pricing data**
+There is **NO backend**.
 
 ---
 
-## System Components
+## 🏗️ Architecture
 
-### 1. App (Frontend)
-- Located in: `/app` (or root if not yet separated)
-- Files: `index.html`, `main.js`, `assets/`
+### 1. Frontend (index.html)
+- Runs entirely in the browser
 - Responsible for:
-  - User input (dates, rooms, guests)
-  - Quote calculation
-  - UI rendering
-  - WhatsApp message generation
+  - UI
+  - Business logic
+  - Price calculation
+  - Message generation
+  - Local persistence
+
+### 2. Data Source (dados.json)
+- Hosted on GitHub
+- Acts as the **single source of truth**
+- Contains:
+  - pricing (`daily`)
+  - metadata (`version`, `updatedAt`)
+  - optional `messageTemplate`
 
 ---
 
-### 2. Pricing Data (`dados.json`)
+## 🔄 Data Flow
+
+### Tarifário update flow:
+
+Cloudbeds → CSV export → Conversor → JSON → GitHub → Orçamentador sync
+
+### Runtime flow:
+
+1. App loads
+2. Loads local cache (localStorage)
+3. User can trigger sync (GitHub)
+4. Remote data updates ONLY pricing (`daily`)
+5. Local data persists:
+   - message template
+   - UI state
+
+---
+
+## 📊 Data Model (CRITICAL)
+
+### REQUIRED FORMAT
 
 ```json
 {
@@ -43,10 +63,10 @@ There is no backend. All computation happens locally in the browser or Electron 
   "updatedAt": "YYYY-MM-DD",
   "messageTemplate": "...",
   "daily": {
-    "2026-03-02": {
-      "base": 320,
-      "extra": 90,
-      "minStay": 0,
+    "YYYY-MM-DD": {
+      "base": number,
+      "extra": number,
+      "minStay": number,
       "cta": 0,
       "ctd": 0
     }
