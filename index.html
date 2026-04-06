@@ -671,6 +671,7 @@ function calc(forceOverride=false){
   function calcRoom(r){
     const totalPessoas = r.adultos + r.criancas + r.bebes
     const bebesCortesia = Math.min(r.bebes, 1)
+    const textoBebe = bebesCortesia === 1 ? ' + 01 criança não pagante' : ''
     const elegiveisBase = 2 + bebesCortesia
     const extras = Math.max(0, totalPessoas - elegiveisBase)
 
@@ -698,7 +699,8 @@ function calc(forceOverride=false){
     const subtotal = totalBase + totalExtras + ajusteSuite
 
     let prefer2A = (r.rotulo2A==='default') ? (label2A==='casal'?'casal':'adultos') : r.rotulo2A
-    const descr = r.custom || compLabel(r, prefer2A)
+    const baseLabel = r.custom || compLabel(r, prefer2A)
+    const descr = baseLabel + textoBebe
 
     return { subtotal, descr, suite:r.suite }
   }
