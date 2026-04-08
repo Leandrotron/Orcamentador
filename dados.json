@@ -1,36 +1,8 @@
 {
-  "version": "2026-04-04-01",
-  "updatedAt": "2026-04-04",
-  "messageTemplate": "*Na sua reserva estará incluso:*\n• Café da manhã (07:30–10:00)\n• Serviço de camareira (limpeza e troca periódica de roupa de cama e banho)\n• Serviço de Wi‑Fi em toda área da pousada\n• Estacionamento (externo e monitorado 24h, uma vaga por suíte)\n• Piscina (10h às 22h)\n• Todas as suítes possuem TV a cabo, frigobar e ar‑condicionado\n\n*Pagamento e condições:*\n• Reserva confirmada após adiantamento de 50% (Pix ou cartão).\n• Tanto o adiantamento quanto o saldo no check‑in podem ser parcelados em até 5x sem juros no cartão.\n• Saldo restante no check‑in.\n• Política de cancelamento conforme regras vigentes.\n\n*🕑 Check-in (entrada) a partir das 14h*\n*🕛 Check-out (saída) até meio dia.*",
+  "version": "2026-04-08-01",
+  "updatedAt": "2026-04-08",
+  "messageTemplate": "Olá! Segue a simulação da hospedagem solicitada.\n\nQualquer dúvida ou ajuste, estou à disposição.",
   "daily": {
-    "2026-04-04": {
-      "base": 500,
-      "extra": 90,
-      "minStay": 3,
-      "cta": 1,
-      "ctd": 1
-    },
-    "2026-04-05": {
-      "base": 320,
-      "extra": 90,
-      "minStay": 0,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-04-06": {
-      "base": 320,
-      "extra": 90,
-      "minStay": 0,
-      "cta": 0,
-      "ctd": 0
-    },
-    "2026-04-07": {
-      "base": 320,
-      "extra": 90,
-      "minStay": 0,
-      "cta": 0,
-      "ctd": 0
-    },
     "2026-04-08": {
       "base": 320,
       "extra": 90,
@@ -74,21 +46,21 @@
       "ctd": 0
     },
     "2026-04-14": {
-      "base": 320,
+      "base": 280,
       "extra": 90,
       "minStay": 0,
       "cta": 0,
       "ctd": 0
     },
     "2026-04-15": {
-      "base": 320,
+      "base": 280,
       "extra": 90,
       "minStay": 0,
       "cta": 0,
       "ctd": 0
     },
     "2026-04-16": {
-      "base": 320,
+      "base": 280,
       "extra": 90,
       "minStay": 0,
       "cta": 0,
@@ -123,21 +95,21 @@
       "ctd": 1
     },
     "2026-04-21": {
-      "base": 320,
+      "base": 280,
       "extra": 90,
       "minStay": 0,
       "cta": 0,
       "ctd": 0
     },
     "2026-04-22": {
-      "base": 320,
+      "base": 280,
       "extra": 90,
       "minStay": 0,
       "cta": 0,
       "ctd": 0
     },
     "2026-04-23": {
-      "base": 320,
+      "base": 280,
       "extra": 90,
       "minStay": 0,
       "cta": 0,
@@ -158,28 +130,28 @@
       "ctd": 0
     },
     "2026-04-26": {
-      "base": 320,
+      "base": 280,
       "extra": 90,
       "minStay": 0,
       "cta": 0,
       "ctd": 0
     },
     "2026-04-27": {
-      "base": 320,
+      "base": 280,
       "extra": 90,
       "minStay": 0,
       "cta": 0,
       "ctd": 0
     },
     "2026-04-28": {
-      "base": 320,
+      "base": 280,
       "extra": 90,
       "minStay": 0,
       "cta": 0,
       "ctd": 0
     },
     "2026-04-29": {
-      "base": 320,
+      "base": 280,
       "extra": 90,
       "minStay": 0,
       "cta": 0,
@@ -2552,6 +2524,34 @@
       "ctd": 1
     },
     "2027-04-03": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-04-04": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-04-05": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-04-06": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-04-07": {
       "base": 0,
       "extra": 0,
       "minStay": 0,
