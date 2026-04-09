@@ -1,15 +1,8 @@
 {
-  "version": "2026-04-08-01",
-  "updatedAt": "2026-04-08",
+  "version": "2026-04-09-01",
+  "updatedAt": "2026-04-09",
   "messageTemplate": "Olá! Segue a simulação da hospedagem solicitada.\n\nQualquer dúvida ou ajuste, estou à disposição.",
   "daily": {
-    "2026-04-08": {
-      "base": 320,
-      "extra": 90,
-      "minStay": 0,
-      "cta": 0,
-      "ctd": 0
-    },
     "2026-04-09": {
       "base": 320,
       "extra": 90,
@@ -168,15 +161,15 @@
       "base": 430,
       "extra": 90,
       "minStay": 3,
-      "cta": 0,
-      "ctd": 0
+      "cta": 1,
+      "ctd": 1
     },
     "2026-05-02": {
       "base": 430,
       "extra": 90,
       "minStay": 3,
-      "cta": 0,
-      "ctd": 0
+      "cta": 1,
+      "ctd": 1
     },
     "2026-05-03": {
       "base": 250,
@@ -2552,6 +2545,13 @@
       "ctd": 1
     },
     "2027-04-07": {
+      "base": 0,
+      "extra": 0,
+      "minStay": 0,
+      "cta": 1,
+      "ctd": 1
+    },
+    "2027-04-08": {
       "base": 0,
       "extra": 0,
       "minStay": 0,
