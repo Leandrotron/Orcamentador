@@ -32,6 +32,9 @@ There is **NO backend**.
   - pricing (`daily`)
   - metadata (`version`, `updatedAt`)
   - optional `messageTemplate`
+  - optional shared package-break configuration (`packageBreaks`)
+  - optional exact stay-price equivalences (`stayEquivalences`)
+  - optional independent explicit check-in blocks (`checkinBlocks`)
 
 ---
 
@@ -46,9 +49,12 @@ Cloudbeds → CSV export → Conversor → JSON → GitHub → Orçamentador syn
 1. App loads
 2. Loads local cache (localStorage)
 3. User can trigger sync (GitHub)
-4. Remote data updates ONLY pricing (`daily`)
+4. Remote data updates pricing (`daily`) and, when present, shared package-break, stay-equivalence, and independent check-in-block configurations (`packageBreaks`, `stayEquivalences`, `checkinBlocks`)
 5. Local data persists:
    - message template
+   - package-break configuration
+   - stay-equivalence configuration
+   - independent explicit check-in-block configuration
    - UI state
 
 ---

@@ -57,7 +57,7 @@
     .room{display:grid;gap:8px;border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:10px;background:#fcfffc}
     .roomHead{display:flex;gap:8px;align-items:center;justify-content:space-between}
     .roomTitle{font-size:13px;color:#0f3d22}
-    .miniRow{display:grid;grid-template-columns:1.1fr .8fr .8fr .8fr 1fr 1.6fr;gap:8px}
+    .miniRow{display:grid;grid-template-columns:1.2fr .7fr .8fr 1fr 1fr;gap:8px}
     .ghostBtn{background:#fff;border:1px solid var(--line);color:var(--vm-ink)}
     .ghostBtn:hover{border-color:var(--vm-green);color:var(--vm-green)}
     .copyDone{background:#0f2f0f;border-color:#145214}
@@ -70,12 +70,30 @@ header h1{font-size:20px;line-height:1.15}
     dialog{border:1px solid var(--line);border-radius:16px;max-width:880px;width:92vw;padding:0;background:#fff}
     .dlgHead{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line)}
     .dlgBody{padding:14px 16px;}
-    .tabs{display:flex;gap:8px;margin-bottom:10px}
+    .tabs{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
     .tab{padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:#fff;color:#164a2a;cursor:pointer}
     .tab.active{background:#eaffea;border-color:#bde9bd}
     .twoCols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     .preview{max-height:220px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:8px}
     .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#f2f7f2;border:1px solid var(--line);border-radius:6px;padding:1px 4px}
+    .tariff-update-shell{display:grid;gap:12px}
+    .tariff-drop-zone{border:1px dashed var(--line);border-radius:14px;padding:16px;text-align:center;cursor:pointer;background:#fbfffb;transition:border-color .2s ease,background .2s ease}
+    .tariff-drop-zone:hover,.tariff-drop-zone.active{border-color:var(--vm-green);background:#f3fff4}
+    .tariff-file-meta{font-size:12px;color:var(--vm-muted);margin-top:8px}
+    .tariff-summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin-top:8px}
+    .tariff-summary-card{border:1px solid var(--line);border-radius:10px;padding:8px;background:#fcfffc}
+    .tariff-summary-card strong{display:block;margin-bottom:4px;font-size:12px;color:var(--vm-muted)}
+    .tariff-table-wrap{overflow:auto;border:1px solid var(--line);border-radius:10px;margin-top:8px}
+    .tariff-table{font-size:12px}
+    .tariff-table th,.tariff-table td{white-space:nowrap}
+    .tariff-legacy-panel{border:1px solid var(--line);border-radius:12px;padding:10px;background:#fcfffc}
+    .package-list{overflow:auto;border:1px solid var(--line);border-radius:10px;margin-top:12px}
+    .package-list table{margin-top:0;font-size:12px}
+    .package-list th,.package-list td{white-space:nowrap}
+    .package-list .package-name{white-space:normal;min-width:140px}
+    .package-actions{display:flex;gap:6px;justify-content:flex-end}
+    .package-actions button{width:auto;padding:6px 9px;cursor:pointer}
+    @media (max-width:900px){.twoCols{grid-template-columns:1fr}.tariff-summary-grid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -104,19 +122,9 @@ header h1{font-size:20px;line-height:1.15}
         </div>
       </div>
 
-      <div class="row">
-        <div>
-          <label>Rótulo padrão para 2 adultos</label>
-          <select id="label2A">
-            <option value="auto" selected>Automático ("02 adultos")</option>
-            <option value="casal">Usar "Casal"</option>
-            <option value="adultos">Sempre "02 adultos"</option>
-          </select>
-        </div>
-        <div>
-          <label>Observações gerais (opcional)</label>
-          <input id="obs" placeholder="Ex.: prefere andar superior; berço; etc." />
-        </div>
+      <div>
+        <label>Observações gerais (opcional)</label>
+        <input id="obs" placeholder="Ex.: prefere andar superior; berço; etc." />
       </div>
 
       <div style="margin-top:10px">
@@ -129,7 +137,7 @@ header h1{font-size:20px;line-height:1.15}
       </div>
 
       <div class="hint" style="margin-top:8px">
-        • Valor base cobre até 2 pessoas (ou “Casal”, se você escolher). • 1 bebê até 3 anos é cortesia por quarto; se houver 2 bebês, 1 conta como extra. • Pessoa extra tem valor por noite e varia por período. • Finais de semana e pacotes podem ter **mínimo de diárias** e **restrições de chegada/saída** (CTA/CTD) lidas do Cloudbeds ao importar CSV.
+        • Valor base cobre até 2 hóspedes pagantes: casal, 02 solteiros ou 01 solteiro. • 1 bebê até 3 anos é cortesia por quarto; se houver 2 bebês, 1 conta como extra. • Pessoa extra tem valor por noite e varia por período. • Finais de semana e pacotes podem ter **mínimo de diárias** e **restrições de chegada/saída** (CTA/CTD) lidas do Cloudbeds ao importar CSV.
       </div>
       <div class="actions" style="margin-top:12px">
         <button class="primary" id="calc">Calcular orçamento</button>
@@ -170,27 +178,249 @@ header h1{font-size:20px;line-height:1.15}
     </div>
     <div class="dlgBody">
       <div class="tabs">
-        <button class="tab active" data-tab="csv">Importar do Cloudbeds (CSV)</button>
+        <button class="tab active" data-tab="csv">Atualizar tarifário</button>
         <button class="tab" data-tab="sync">Sincronização</button>
         <button class="tab" data-tab="backup">Backup (Exportar/Importar JSON)</button>
+        <button class="tab" data-tab="packages">Pacotes e quebra</button>
         <button class="tab" data-tab="texto">Texto da mensagem</button>
       </div>
 
       <div id="tab-csv">
         <div class="twoCols">
+          <div class="tariff-update-shell">
+            <div>
+              <label>Arquivo bruto do Cloudbeds</label>
+              <div id="tariffDropZone" class="tariff-drop-zone" tabindex="0">
+                <strong>Arraste e solte um arquivo .xlsx ou .csv aqui</strong>
+                <div class="hint" style="margin-top:6px">Ou clique para selecionar manualmente.</div>
+                <input type="file" id="tariffRawFile" accept=".xlsx,.csv" hidden />
+              </div>
+              <div id="tariffSelectedFile" class="tariff-file-meta">Nenhum arquivo selecionado.</div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label>Quarto-base</label>
+                <input id="tariffRoomHint" value="Suíte com Varanda" />
+              </div>
+              <div>
+                <label>Versão</label>
+                <input id="tariffVersion" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label>Data da atualização</label>
+                <input id="tariffUpdatedAt" type="date" />
+              </div>
+              <div>
+                <label>Mensagem</label>
+                <input id="tariffMessageHint" readonly value="Usa o template atual do Orçamentador" />
+              </div>
+            </div>
+
+            <div class="actions" style="margin-top:8px">
+              <button id="tariffAnalyzeBtn">Analisar arquivo</button>
+              <button id="tariffApplyLocalBtn" disabled>Aplicar somente neste navegador</button>
+              <button id="tariffResetBtn" class="secondary">Limpar</button>
+            </div>
+
+            <div class="hint">Esta ação altera o tarifário somente neste navegador. O arquivo oficial no GitHub e os outros usuários não serão afetados.</div>
+
+            <div id="tariffAnalysisStatus" class="hint">Esta etapa apenas analisa o arquivo. O tarifário ativo ainda não será alterado.</div>
+
+            <div id="tariffSummary"></div>
+            <div id="tariffValidationWarnings" class="hint"></div>
+            <div class="tariff-table-wrap">
+              <table id="tariffPreviewTable" class="tariff-table" style="display:none"></table>
+            </div>
+            <details style="margin-top:8px">
+              <summary>Ver detalhes técnicos da conversão</summary>
+              <pre id="tariffTechnicalLog" style="white-space:pre-wrap;margin-top:8px;font-size:12px"></pre>
+            </details>
+
+            <section class="tariff-legacy-panel" aria-labelledby="tariffPublishPreviewTitle">
+              <strong id="tariffPublishPreviewTitle">Publicação de teste</strong>
+              <div class="hint" style="margin-top:6px">Esta ação publica somente em <span class="kbd">dados.preview.json</span>. O tarifário oficial usado pelos outros usuários não será alterado.</div>
+              <label for="tariffGithubToken">Token do GitHub</label>
+              <div class="row">
+                <input id="tariffGithubToken" type="password" autocomplete="off" placeholder="Token com Contents: Read and write" />
+                <button id="tariffGithubTokenToggle" type="button" class="secondary">Mostrar token</button>
+              </div>
+              <label style="display:flex;align-items:center;gap:8px">
+                <input id="tariffRememberToken" type="checkbox" style="width:auto" />
+                Lembrar neste navegador
+              </label>
+              <div class="actions" style="margin-top:8px">
+                <button id="tariffPublishPreviewBtn" disabled>Publicar arquivo de teste no GitHub</button>
+                <button id="tariffForgetTokenBtn" type="button" class="secondary">Esquecer token</button>
+              </div>
+              <div id="tariffPublishPreviewStatus" class="hint" style="margin-top:8px">Analise um arquivo válido e informe o token para habilitar a publicação de teste.</div>
+              <details id="tariffPublishPreviewDetails" style="margin-top:8px">
+                <summary>Detalhes da publicação de teste</summary>
+                <pre id="tariffPublishPreviewLog" style="white-space:pre-wrap;margin-top:8px;font-size:12px"></pre>
+              </details>
+            </section>
+          </div>
+
+          <div class="tariff-update-shell">
+            <details open class="tariff-legacy-panel">
+              <summary>Importação CSV simplificada — compatibilidade</summary>
+              <div style="margin-top:10px">
+                <label>Arquivo CSV exportado do Cloudbeds</label>
+                <input type="file" id="csvFile" accept=".csv,text/csv" />
+                <div class="hint" style="margin-top:6px">Aceita separador vírgula ou ponto‑e‑vírgula; detecta datas em <span class="kbd">DD/MM/AAAA</span> ou <span class="kbd">AAAA-MM-DD</span>. Lê linhas: <em>Tarifário base</em>, <em>Preço para o adulto 3</em>, <em>Estadia mínima</em>, <em>Fechado para Chegada</em>, <em>Fechado para Partida</em>.</div>
+                <div class="actions" style="margin-top:10px">
+                  <button id="csvParse" class="secondary">Pré-visualizar</button>
+                  <button id="csvApply">Aplicar</button>
+                </div>
+                <label style="margin-top:10px">Prévia</label>
+                <div id="csvPreview" class="preview muted">Carregue um CSV e clique em Pré‑visualizar.</div>
+              </div>
+            </details>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-packages" style="display:none">
+        <div class="tariff-update-shell">
           <div>
-            <label>Arquivo CSV exportado do Cloudbeds</label>
-            <input type="file" id="csvFile" accept=".csv,text/csv" />
-            <div class="hint" style="margin-top:6px">Aceita separador vírgula ou ponto‑e‑vírgula; detecta datas em <span class="kbd">DD/MM/AAAA</span> ou <span class="kbd">AAAA-MM-DD</span>. Lê linhas: <em>Tarifário base</em>, <em>Preço para o adulto 3</em>, <em>Estadia mínima</em>, <em>Fechado para Chegada</em>, <em>Fechado para Partida</em>.</div>
-            <div class="actions" style="margin-top:10px">
-              <button id="csvParse" class="secondary">Pré-visualizar</button>
-              <button id="csvApply">Aplicar</button>
+            <strong id="packageEditorTitle">Novo pacote</strong>
+            <div class="hint" style="margin-top:6px">A data de saída não é uma noite do pacote. Ex.: entrada 04/09 e saída 07/09 abrange as noites 04, 05 e 06. O cadastro não substitui o tarifário importado nem define o preço do pacote completo.</div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label for="packageName">Nome</label>
+              <input id="packageName" placeholder="Ex.: Feriado fictício" />
+            </div>
+            <div>
+              <label style="display:flex;align-items:center;gap:8px;margin-top:31px">
+                <input id="packageAllowBreak" type="checkbox" style="width:auto" />
+                Permitir quebra
+              </label>
             </div>
           </div>
-          <div>
-            <label>Prévia</label>
-            <div id="csvPreview" class="preview muted">Carregue um CSV e clique em Pré‑visualizar.</div>
+
+          <div class="row">
+            <div>
+              <label for="packageFrom">Data de entrada</label>
+              <input id="packageFrom" type="date" />
+            </div>
+            <div>
+              <label for="packageTo">Data de saída</label>
+              <input id="packageTo" type="date" />
+            </div>
           </div>
+
+          <div class="row">
+            <div>
+              <label for="packageMinNights">Mínimo de noites dentro do pacote para permitir a quebra</label>
+              <input id="packageMinNights" type="number" min="1" step="1" value="1" />
+            </div>
+            <div>
+              <label for="packageSurchargeType">Tipo de acréscimo</label>
+              <select id="packageSurchargeType">
+                <option value="percent">Percentual sobre a tarifa base</option>
+                <option value="fixed">Valor em reais por diária</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label for="packageSurchargeValue">Valor do acréscimo</label>
+            <input id="packageSurchargeValue" type="number" min="0" step="0.01" value="0" />
+            <div class="hint" style="margin-top:6px">Percentual: aumenta a tarifa base de cada noite afetada em X%. Reais por diária: soma R$ X à tarifa base de cada noite afetada; não é o preço final da diária nem um acréscimo único por reserva.</div>
+          </div>
+
+          <div class="actions">
+            <button id="packageSaveBtn" type="button">Salvar pacote</button>
+            <button id="packageCancelBtn" type="button" class="secondary" style="display:none">Cancelar edição</button>
+          </div>
+          <div id="packageEditorStatus" class="hint">A quebra fica desligada por padrão.</div>
+          <div id="packageList" class="package-list"></div>
+
+          <section class="tariff-legacy-panel" aria-labelledby="equivalenceEditorTitle" style="margin-top:8px">
+            <div>
+              <strong id="equivalenceEditorTitle">Nova equivalência de estadia</strong>
+              <div class="hint" style="margin-top:6px">A alternativa usa o preço calculável do período de referência somente quando check-in e check-out coincidem exatamente. As datas reais permanecem no orçamento. Equivalências não criam quebras nem alteram o tarifário diário.</div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label for="equivalenceName">Nome</label>
+                <input id="equivalenceName" placeholder="Ex.: Alternativa autorizada" />
+              </div>
+              <div>
+                <label for="equivalenceActive">Ativa</label>
+                <select id="equivalenceActive">
+                  <option value="0" selected>Não</option>
+                  <option value="1">Sim</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label for="equivalenceReferenceFrom">Entrada da referência</label>
+                <input id="equivalenceReferenceFrom" type="date" />
+              </div>
+              <div>
+                <label for="equivalenceReferenceTo">Saída da referência</label>
+                <input id="equivalenceReferenceTo" type="date" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label for="equivalenceAlternativeFrom">Entrada da alternativa</label>
+                <input id="equivalenceAlternativeFrom" type="date" />
+              </div>
+              <div>
+                <label for="equivalenceAlternativeTo">Saída da alternativa</label>
+                <input id="equivalenceAlternativeTo" type="date" />
+              </div>
+            </div>
+
+            <div class="actions" style="margin-top:10px">
+              <button id="equivalenceSaveBtn" type="button">Salvar equivalência</button>
+              <button id="equivalenceCancelBtn" type="button" class="secondary" style="display:none">Cancelar edição</button>
+            </div>
+            <div id="equivalenceEditorStatus" class="hint" style="margin-top:8px">Nenhuma equivalência é cadastrada automaticamente.</div>
+            <div id="equivalenceList" class="package-list"></div>
+          </section>
+
+          <section class="tariff-legacy-panel" aria-labelledby="checkinBlockEditorTitle" style="margin-top:8px">
+            <div>
+              <strong id="checkinBlockEditorTitle">Novo bloqueio explícito de check-in</strong>
+              <div class="hint" style="margin-top:6px">Configuração independente das equivalências de preço. Um bloqueio ativo rejeita somente a chegada nas datas informadas, inclusive com override; reservas iniciadas antes podem permanecer hospedadas.</div>
+            </div>
+            <div class="row">
+              <div>
+                <label for="checkinBlockName">Nome</label>
+                <input id="checkinBlockName" placeholder="Ex.: Bloqueios do período especial" />
+              </div>
+              <div>
+                <label for="checkinBlockActive">Ativo</label>
+                <select id="checkinBlockActive">
+                  <option value="1" selected>Sim</option>
+                  <option value="0">Não</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label for="checkinBlockDates">Datas de check-in bloqueadas</label>
+              <input id="checkinBlockDates" placeholder="AAAA-MM-DD, AAAA-MM-DD" />
+              <div class="hint" style="margin-top:6px">Separe as datas por vírgula. As datas precisam incluir o ano e nenhuma é cadastrada automaticamente.</div>
+            </div>
+            <div class="actions" style="margin-top:10px">
+              <button id="checkinBlockSaveBtn" type="button">Salvar bloqueio</button>
+              <button id="checkinBlockCancelBtn" type="button" class="secondary" style="display:none">Cancelar edição</button>
+            </div>
+            <div id="checkinBlockEditorStatus" class="hint" style="margin-top:8px">Nenhum bloqueio é cadastrado automaticamente.</div>
+            <div id="checkinBlockList" class="package-list"></div>
+          </section>
         </div>
       </div>
 
@@ -245,6 +475,9 @@ header h1{font-size:20px;line-height:1.15}
     </div>
   </dialog>
 
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="js/tariff-converter.js"></script>
+<script src="js/tariff-publisher.js"></script>
 <script>
 /*********************
  * Utils de data
@@ -286,9 +519,58 @@ const pacoteNov = {from:'2025-11-20', to:'2025-11-23', noites:3, valorCasal:1500
 function extraPadrao(dateStr){ return (dateStr >= '2025-12-01') ? 110 : 90 }
 function within(d, a, b){ return (d>=a && d<=b) }
 
+const DATA_SOURCE_OFFICIAL = 'json-oficial'
+const DATA_SOURCE_LOCAL_CACHE = 'local-cache'
+const DATA_SOURCE_MANUAL_JSON = 'manual-json'
+const DATA_SOURCE_MANUAL_CSV = 'manual-csv'
+const DATA_SOURCE_CLOUDBEDS_LOCAL = 'cloudbeds-local'
+const DATA_SOURCE_HARDCODED = 'hardcoded'
+
+let ACTIVE_DATA_SOURCE = DATA_SOURCE_HARDCODED
+let INITIAL_SYNC_PENDING = true
+const DATA_LOG_KEYS = new Set()
+
+function logData(msg, level='info'){
+  const fn = console[level] || console.info
+  fn(`[dados] ${msg}`)
+}
+function logDataOnce(key, msg, level='info'){
+  if (DATA_LOG_KEYS.has(key)) return
+  DATA_LOG_KEYS.add(key)
+  logData(msg, level)
+}
+function setActiveDaily(map, source){
+  DAILY = (map && typeof map === 'object') ? map : {}
+  ACTIVE_DATA_SOURCE = source || DATA_SOURCE_HARDCODED
+}
+function getDataSourceLabel(source){
+  switch(source){
+    case DATA_SOURCE_OFFICIAL: return 'JSON oficial'
+    case DATA_SOURCE_LOCAL_CACHE: return 'localStorage'
+    case DATA_SOURCE_MANUAL_JSON: return 'importação manual (JSON)'
+    case DATA_SOURCE_MANUAL_CSV: return 'importação manual (CSV)'
+    case DATA_SOURCE_CLOUDBEDS_LOCAL: return 'Arquivo Cloudbeds — local'
+    default: return 'tabela hardcoded'
+  }
+}
+function applyLocalCacheFallback(reason=''){
+  const cached = loadDaily()
+  if (countDailyEntries(cached) > 0){
+    setActiveDaily(cached, DATA_SOURCE_LOCAL_CACHE)
+    logDataOnce('local-cache', `fallback para localStorage${reason ? ` (${reason})` : ''}`)
+    return true
+  }
+  return false
+}
+function activateHardcodedFallback(reason=''){
+  setActiveDaily({}, DATA_SOURCE_HARDCODED)
+  logDataOnce('hardcoded', `fallback para tabela hardcoded${reason ? ` (${reason})` : ''}`)
+}
+
 function tarifaFallback(date){
   const s = ymd(date)
-  if (s>='2025-12-29' && s<='2026-01-02') return {valor:0, extra:extraPadrao(s), especial:true, label:'Réveillon — pacotes fechados'}
+  logDataOnce('hardcoded-runtime', 'fallback para tabela hardcoded')
+  if (s>='2025-12-29' && s<='2026-01-02') return {valor:0, extra:extraPadrao(s), especial:true, label:'Réveillon legado 2025/2026 — pacotes fechados'}
   for(const t of tarifas){
     if (within(s, t.from, t.to)){
       if (t.tipo==='fixo') return {valor:t.valor, extra:t.extra ?? extraPadrao(s), minNoites:t.minNoites||0, label:t.label}
@@ -304,7 +586,7 @@ function tarifaFallback(date){
 const LSKEY = 'vm_daily_rates_v1';
 function loadDaily(){ try{ return JSON.parse(localStorage.getItem(LSKEY)||'{}') }catch{ return {} } }
 function saveDaily(map){ localStorage.setItem(LSKEY, JSON.stringify(map)) }
-let DAILY = loadDaily(); // { 'YYYY-MM-DD': {base, extra, minStay, cta, ctd} }
+let DAILY = {}; // { 'YYYY-MM-DD': {base, extra, minStay, cta, ctd} }
 
 const MSGTPL_KEY = 'vm_msg_template_v1';
 const DEFAULT_MSG_TEMPLATE = `*Na sua reserva estará incluso:*
@@ -326,7 +608,14 @@ const DEFAULT_MSG_TEMPLATE = `*Na sua reserva estará incluso:*
 function loadMsgTemplate(){ return localStorage.getItem(MSGTPL_KEY) || DEFAULT_MSG_TEMPLATE }
 function saveMsgTemplate(v){ localStorage.setItem(MSGTPL_KEY, v) }
 
-const APP_VERSION = 'v1.2.3';
+const PACKAGE_BREAKS_KEY = 'vm_package_breaks_v1'
+let PACKAGE_BREAKS = []
+const STAY_EQUIVALENCES_KEY = 'vm_stay_equivalences_v1'
+let STAY_EQUIVALENCES = []
+const CHECKIN_BLOCKS_KEY = 'vm_checkin_blocks_v1'
+let CHECKIN_BLOCKS = []
+
+const APP_VERSION = 'v1.3.0';
 const REMOTE_DATA_URL = 'https://raw.githubusercontent.com/Leandrotron/Orcamentador/main/dados.json';
 const DATA_META_KEY = 'vm_data_meta_v1';
 
@@ -334,17 +623,380 @@ function loadDataMeta(){ try{ return JSON.parse(localStorage.getItem(DATA_META_K
 function saveDataMeta(meta){ localStorage.setItem(DATA_META_KEY, JSON.stringify(meta||{})) }
 
 function countDailyEntries(obj){ try{ return Object.keys(obj||{}).length }catch{ return 0 } }
+function isPlainObject(v){ return !!v && typeof v === 'object' && !Array.isArray(v) }
+function isIsoDateKey(s){ return /^\d{4}-\d{2}-\d{2}$/.test(String(s||'')) }
+function isNonNegativeNumber(v){ return typeof v === 'number' && Number.isFinite(v) && v >= 0 }
+function isNonNegativeInt(v){ return Number.isInteger(v) && v >= 0 }
+function isBoolLikeFlag(v){ return v === 0 || v === 1 || v === true || v === false }
+function isValidIsoDate(s){
+  return isIsoDateKey(s) && ymd(toLocalDate(s)) === s
+}
+function packageDuration(packageConfig){
+  if (!packageConfig || !isValidIsoDate(packageConfig.from) || !isValidIsoDate(packageConfig.to)) return 0
+  return Math.round((toLocalDate(packageConfig.to) - toLocalDate(packageConfig.from)) / 86400000)
+}
+function validatePackageBreaks(packageBreaks){
+  const errors = []
+  if (!Array.isArray(packageBreaks)) return { valid:false, errors:['Campo packageBreaks inválido: esperado array.'] }
+
+  packageBreaks.forEach((packageConfig, index)=>{
+    const label = `packageBreaks[${index}]`
+    if (!isPlainObject(packageConfig)){
+      errors.push(`${label} inválido: esperado objeto.`)
+      return
+    }
+    if (typeof packageConfig.id !== 'string' || !packageConfig.id.trim()) errors.push(`${label}.id inválido: esperado texto não vazio.`)
+    if (typeof packageConfig.name !== 'string' || !packageConfig.name.trim()) errors.push(`${label}.name inválido: esperado texto não vazio.`)
+    if (!isValidIsoDate(packageConfig.from)) errors.push(`${label}.from inválido: esperado data real em YYYY-MM-DD.`)
+    if (!isValidIsoDate(packageConfig.to)) errors.push(`${label}.to inválido: esperado data real em YYYY-MM-DD.`)
+    const duration = packageDuration(packageConfig)
+    if (duration < 1) errors.push(`${label}: a saída deve ser posterior à entrada.`)
+    if (typeof packageConfig.allowBreak !== 'boolean') errors.push(`${label}.allowBreak inválido: esperado boolean.`)
+    if (!Number.isInteger(packageConfig.minNights) || packageConfig.minNights < 1) errors.push(`${label}.minNights inválido: esperado inteiro >= 1.`)
+    else if (duration > 0 && packageConfig.minNights >= duration) errors.push(`${label}.minNights incompatível: deve ser menor que as ${duration} noites do pacote.`)
+    if (!['percent','fixed'].includes(packageConfig.surchargeType)) errors.push(`${label}.surchargeType inválido: use percent ou fixed.`)
+    if (!isNonNegativeNumber(packageConfig.surchargeValue)) errors.push(`${label}.surchargeValue inválido: esperado number >= 0.`)
+  })
+
+  const ids = new Set()
+  packageBreaks.forEach((packageConfig, index)=>{
+    if (!isPlainObject(packageConfig) || typeof packageConfig.id !== 'string') return
+    if (ids.has(packageConfig.id)) errors.push(`packageBreaks[${index}].id duplicado: "${packageConfig.id}".`)
+    ids.add(packageConfig.id)
+  })
+
+  const dated = packageBreaks
+    .filter(packageConfig=>isPlainObject(packageConfig) && isValidIsoDate(packageConfig.from) && isValidIsoDate(packageConfig.to) && packageConfig.from < packageConfig.to)
+    .slice()
+    .sort((a,b)=>a.from.localeCompare(b.from) || a.to.localeCompare(b.to))
+  for (let index=1; index<dated.length; index++){
+    const previous = dated[index-1]
+    const current = dated[index]
+    if (current.from < previous.to) errors.push(`Pacotes sobrepostos: "${previous.name}" e "${current.name}" compartilham noites.`)
+  }
+
+  return { valid:errors.length===0, errors }
+}
+function normalizePackageBreak(packageConfig){
+  return {
+    id:String(packageConfig.id).trim(),
+    name:String(packageConfig.name).trim(),
+    from:String(packageConfig.from),
+    to:String(packageConfig.to),
+    allowBreak:packageConfig.allowBreak === true,
+    minNights:Number(packageConfig.minNights),
+    surchargeType:packageConfig.surchargeType,
+    surchargeValue:Math.round((Number(packageConfig.surchargeValue) + Number.EPSILON) * 100) / 100
+  }
+}
+function stayIntervalKey(from, to){ return `${from}|${to}` }
+function validateStayEquivalences(equivalences){
+  const errors = []
+  if (!Array.isArray(equivalences)) return { valid:false, errors:['Campo stayEquivalences inválido: esperado array.'] }
+
+  equivalences.forEach((equivalence, index)=>{
+    const label = `stayEquivalences[${index}]`
+    if (!isPlainObject(equivalence)){
+      errors.push(`${label} inválido: esperado objeto.`)
+      return
+    }
+    if (typeof equivalence.id !== 'string' || !equivalence.id.trim()) errors.push(`${label}.id inválido: esperado texto não vazio.`)
+    if (typeof equivalence.name !== 'string' || !equivalence.name.trim()) errors.push(`${label}.name inválido: esperado texto não vazio.`)
+    if (typeof equivalence.active !== 'boolean') errors.push(`${label}.active inválido: esperado boolean.`)
+    for (const field of ['referenceFrom','referenceTo','alternativeFrom','alternativeTo']){
+      if (!isValidIsoDate(equivalence[field])) errors.push(`${label}.${field} inválido: esperado data real em YYYY-MM-DD.`)
+    }
+    const referenceDuration = packageDuration({from:equivalence.referenceFrom, to:equivalence.referenceTo})
+    const alternativeDuration = packageDuration({from:equivalence.alternativeFrom, to:equivalence.alternativeTo})
+    if (referenceDuration < 1) errors.push(`${label}: período de referência inválido.`)
+    if (alternativeDuration < 1) errors.push(`${label}: período alternativo inválido.`)
+    if (referenceDuration > 0 && alternativeDuration > 0 && referenceDuration !== alternativeDuration) errors.push(`${label}: referência e alternativa devem ter o mesmo número de noites.`)
+    if (stayIntervalKey(equivalence.referenceFrom,equivalence.referenceTo) === stayIntervalKey(equivalence.alternativeFrom,equivalence.alternativeTo)) errors.push(`${label}: autorreferência não é permitida.`)
+    if (Object.prototype.hasOwnProperty.call(equivalence, 'blockedCheckins')){
+      if (!Array.isArray(equivalence.blockedCheckins)) errors.push(`${label}.blockedCheckins legado inválido: esperado array.`)
+      else equivalence.blockedCheckins.forEach((date, blockedIndex)=>{
+        if (!isValidIsoDate(date)) errors.push(`${label}.blockedCheckins[${blockedIndex}] legado inválido: esperado data real em YYYY-MM-DD.`)
+      })
+    }
+  })
+
+  const ids = new Set()
+  const alternatives = new Map()
+  const referenceKeys = new Set()
+  const alternativeKeys = new Set()
+  equivalences.forEach((equivalence, index)=>{
+    if (!isPlainObject(equivalence)) return
+    if (typeof equivalence.id === 'string'){
+      if (ids.has(equivalence.id)) errors.push(`stayEquivalences[${index}].id duplicado: "${equivalence.id}".`)
+      ids.add(equivalence.id)
+    }
+    if ([equivalence.referenceFrom,equivalence.referenceTo,equivalence.alternativeFrom,equivalence.alternativeTo].every(isValidIsoDate)){
+      const referenceKey = stayIntervalKey(equivalence.referenceFrom,equivalence.referenceTo)
+      const alternativeKey = stayIntervalKey(equivalence.alternativeFrom,equivalence.alternativeTo)
+      referenceKeys.add(referenceKey)
+      alternativeKeys.add(alternativeKey)
+      if (alternatives.has(alternativeKey)) errors.push(`Alternativa duplicada ou ambígua entre "${alternatives.get(alternativeKey)}" e "${equivalence.name}".`)
+      else alternatives.set(alternativeKey, equivalence.name)
+    }
+  })
+  for (const key of referenceKeys){
+    if (alternativeKeys.has(key)) errors.push(`Encadeamento de equivalências não permitido no período ${key.replace('|',' a ')}.`)
+  }
+
+  return { valid:errors.length===0, errors }
+}
+function normalizeStayEquivalence(equivalence){
+  return {
+    id:String(equivalence.id).trim(),
+    name:String(equivalence.name).trim(),
+    active:equivalence.active === true,
+    referenceFrom:String(equivalence.referenceFrom),
+    referenceTo:String(equivalence.referenceTo),
+    alternativeFrom:String(equivalence.alternativeFrom),
+    alternativeTo:String(equivalence.alternativeTo),
+    blockedCheckins:[...new Set((Array.isArray(equivalence.blockedCheckins) ? equivalence.blockedCheckins : []).map(String))].sort()
+  }
+}
+function loadStayEquivalences(){
+  try{
+    const parsed = JSON.parse(localStorage.getItem(STAY_EQUIVALENCES_KEY) || '[]')
+    const validation = validateStayEquivalences(parsed)
+    if (!validation.valid){
+      console.warn('[equivalências] Configuração local inválida ignorada:', validation.errors)
+      return []
+    }
+    return parsed.map(normalizeStayEquivalence)
+  }catch(error){
+    console.warn('[equivalências] Não foi possível carregar a configuração local.', error && error.message)
+    return []
+  }
+}
+function getStayEquivalences(){
+  return STAY_EQUIVALENCES.map(equivalence=>{
+    const copy = {...equivalence}
+    if (equivalence.blockedCheckins.length) copy.blockedCheckins = [...equivalence.blockedCheckins]
+    else delete copy.blockedCheckins
+    return copy
+  })
+}
+function saveStayEquivalences(equivalences){
+  const validation = validateStayEquivalences(equivalences)
+  if (!validation.valid) throw new Error(validation.errors.join(' | '))
+  STAY_EQUIVALENCES = equivalences.map(normalizeStayEquivalence)
+  localStorage.setItem(STAY_EQUIVALENCES_KEY, JSON.stringify(STAY_EQUIVALENCES))
+  return getStayEquivalences()
+}
+function findStayEquivalence(checkin, checkout, equivalences=getStayEquivalences()){
+  return equivalences.find(equivalence=>equivalence.active && equivalence.alternativeFrom===checkin && equivalence.alternativeTo===checkout) || null
+}
+function validateCheckinBlocks(blocks){
+  const errors = []
+  if (!Array.isArray(blocks)) return {valid:false, errors:['Campo checkinBlocks inválido: esperado array.']}
+  const ids = new Set()
+  const dates = new Map()
+  blocks.forEach((block,index)=>{
+    const label = `checkinBlocks[${index}]`
+    if (!isPlainObject(block)){
+      errors.push(`${label} inválido: esperado objeto.`)
+      return
+    }
+    if (typeof block.id !== 'string' || !block.id.trim()) errors.push(`${label}.id inválido: esperado texto não vazio.`)
+    else if (ids.has(block.id)) errors.push(`${label}.id duplicado: "${block.id}".`)
+    else ids.add(block.id)
+    if (typeof block.name !== 'string' || !block.name.trim()) errors.push(`${label}.name inválido: esperado texto não vazio.`)
+    if (typeof block.active !== 'boolean') errors.push(`${label}.active inválido: esperado boolean.`)
+    if (!Array.isArray(block.dates) || block.dates.length===0) errors.push(`${label}.dates inválido: informe ao menos uma data.`)
+    else block.dates.forEach((date,dateIndex)=>{
+      if (!isValidIsoDate(date)) errors.push(`${label}.dates[${dateIndex}] inválido: esperado data real em YYYY-MM-DD.`)
+      else if (dates.has(date)) errors.push(`Check-in ${date} duplicado entre "${dates.get(date)}" e "${block.name}".`)
+      else dates.set(date,block.name)
+    })
+  })
+  return {valid:errors.length===0, errors}
+}
+function normalizeCheckinBlock(block){
+  return {
+    id:String(block.id).trim(),
+    name:String(block.name).trim(),
+    active:block.active === true,
+    dates:[...new Set(block.dates.map(String))].sort()
+  }
+}
+function loadCheckinBlocks(){
+  try{
+    const parsed = JSON.parse(localStorage.getItem(CHECKIN_BLOCKS_KEY) || '[]')
+    const validation = validateCheckinBlocks(parsed)
+    if (!validation.valid){
+      console.warn('[bloqueios de check-in] Configuração local inválida ignorada:', validation.errors)
+      return []
+    }
+    return parsed.map(normalizeCheckinBlock)
+  }catch(error){
+    console.warn('[bloqueios de check-in] Não foi possível carregar a configuração local.', error && error.message)
+    return []
+  }
+}
+function getCheckinBlocks(){ return CHECKIN_BLOCKS.map(block=>({...block, dates:[...block.dates]})) }
+function saveCheckinBlocks(blocks){
+  const validation = validateCheckinBlocks(blocks)
+  if (!validation.valid) throw new Error(validation.errors.join(' | '))
+  CHECKIN_BLOCKS = blocks.map(normalizeCheckinBlock)
+  localStorage.setItem(CHECKIN_BLOCKS_KEY, JSON.stringify(CHECKIN_BLOCKS))
+  return getCheckinBlocks()
+}
+function migrateLegacyCheckinBlocks(equivalences=getStayEquivalences()){
+  const existing = getCheckinBlocks()
+  const knownDates = new Set(existing.flatMap(block=>block.dates))
+  const migrated = []
+  const hasLegacyDates = equivalences.some(equivalence=>Array.isArray(equivalence.blockedCheckins) && equivalence.blockedCheckins.length>0)
+  equivalences.forEach(equivalence=>{
+    const dates = (equivalence.blockedCheckins || []).filter(date=>!knownDates.has(date))
+    if (!dates.length) return
+    dates.forEach(date=>knownDates.add(date))
+    let id = `legacy-${equivalence.id}`
+    let suffix = 2
+    while ([...existing,...migrated].some(block=>block.id===id)) id = `legacy-${equivalence.id}-${suffix++}`
+    migrated.push({id, name:`${equivalence.name} — bloqueios migrados`, active:true, dates})
+  })
+  if (migrated.length) saveCheckinBlocks([...existing,...migrated])
+  if (hasLegacyDates){
+    saveStayEquivalences(equivalences.map(equivalence=>{
+      const cleaned = {...equivalence}
+      delete cleaned.blockedCheckins
+      return cleaned
+    }))
+  }
+  return migrated.length
+}
+function findExplicitCheckinBlock(checkin, blocks=getCheckinBlocks()){
+  return blocks.find(block=>block.active && block.dates.includes(checkin)) || null
+}
+function loadPackageBreaks(){
+  try{
+    const parsed = JSON.parse(localStorage.getItem(PACKAGE_BREAKS_KEY) || '[]')
+    const validation = validatePackageBreaks(parsed)
+    if (!validation.valid){
+      console.warn('[pacotes] Configuração local inválida ignorada:', validation.errors)
+      return []
+    }
+    return parsed.map(normalizePackageBreak)
+  }catch(error){
+    console.warn('[pacotes] Não foi possível carregar a configuração local.', error && error.message)
+    return []
+  }
+}
+function getPackageBreaks(){ return PACKAGE_BREAKS.map(packageConfig=>({...packageConfig})) }
+function savePackageBreaks(packageBreaks){
+  const validation = validatePackageBreaks(packageBreaks)
+  if (!validation.valid) throw new Error(validation.errors.join(' | '))
+  PACKAGE_BREAKS = packageBreaks.map(normalizePackageBreak)
+  localStorage.setItem(PACKAGE_BREAKS_KEY, JSON.stringify(PACKAGE_BREAKS))
+  return getPackageBreaks()
+}
+function payloadWithQuoteSettings(payload){
+  return {...payload, packageBreaks:getPackageBreaks(), stayEquivalences:getStayEquivalences(), checkinBlocks:getCheckinBlocks()}
+}
+PACKAGE_BREAKS = loadPackageBreaks()
+STAY_EQUIVALENCES = loadStayEquivalences()
+CHECKIN_BLOCKS = loadCheckinBlocks()
+migrateLegacyCheckinBlocks()
+function normalizePayloadForValidation(payload){
+  if (isPlainObject(payload) && isPlainObject(payload.daily)) return payload
+  if (isPlainObject(payload)) return { daily: payload }
+  return payload
+}
+function validateTariffPayload(payload){
+  const errors = []
+  const warnings = []
+  const normalized = normalizePayloadForValidation(payload)
+
+  if (!normalized || typeof normalized !== 'object' || Array.isArray(normalized)){
+    return { valid:false, errors:['Payload ausente ou inválido: esperado objeto.'], warnings }
+  }
+
+  if (!isPlainObject(normalized.daily)){
+    return { valid:false, errors:['Campo daily ausente ou inválido: esperado objeto.'], warnings }
+  }
+
+  if (typeof normalized.version !== 'string') warnings.push('Campo version ausente ou não-string.')
+  if (typeof normalized.updatedAt !== 'string') warnings.push('Campo updatedAt ausente ou não-string.')
+  if (typeof normalized.messageTemplate !== 'string') warnings.push('Campo messageTemplate ausente ou não-string.')
+
+  if (Object.prototype.hasOwnProperty.call(normalized, 'packageBreaks')){
+    const packageValidation = validatePackageBreaks(normalized.packageBreaks)
+    errors.push(...packageValidation.errors)
+  }
+  if (Object.prototype.hasOwnProperty.call(normalized, 'stayEquivalences')){
+    const equivalenceValidation = validateStayEquivalences(normalized.stayEquivalences)
+    errors.push(...equivalenceValidation.errors)
+  }
+  if (Object.prototype.hasOwnProperty.call(normalized, 'checkinBlocks')){
+    const blockValidation = validateCheckinBlocks(normalized.checkinBlocks)
+    errors.push(...blockValidation.errors)
+  }
+
+  const keys = Object.keys(normalized.daily).sort()
+  for (const dateKey of keys){
+    if (!isIsoDateKey(dateKey)){
+      errors.push(`Data inválida em daily: "${dateKey}" (esperado YYYY-MM-DD).`)
+      continue
+    }
+    const row = normalized.daily[dateKey]
+    if (!isPlainObject(row)){
+      errors.push(`Registro diário inválido em ${dateKey}: esperado objeto.`)
+      continue
+    }
+    if (!isNonNegativeNumber(row.base)) errors.push(`Campo base inválido em ${dateKey}: esperado number >= 0.`)
+    if (!isNonNegativeNumber(row.extra)) errors.push(`Campo extra inválido em ${dateKey}: esperado number >= 0.`)
+    if (!isNonNegativeInt(row.minStay)) errors.push(`Campo minStay inválido em ${dateKey}: esperado inteiro >= 0.`)
+    if (!isBoolLikeFlag(row.cta)) errors.push(`Campo cta inválido em ${dateKey}: esperado 0, 1, true ou false.`)
+    if (!isBoolLikeFlag(row.ctd)) errors.push(`Campo ctd inválido em ${dateKey}: esperado 0, 1, true ou false.`)
+  }
+
+  if (keys.length > 1 && keys.every(isIsoDateKey)){
+    const missing = []
+    let cursor = toLocalDate(keys[0])
+    const end = keys[keys.length-1]
+    const known = new Set(keys)
+    while (ymd(cursor) <= end){
+      const current = ymd(cursor)
+      if (!known.has(current)) missing.push(current)
+      cursor = addDays(cursor, 1)
+    }
+    if (missing.length){
+      const sample = missing.slice(0,5).join(', ')
+      warnings.push(`Existem ${missing.length} buraco(s) entre ${keys[0]} e ${end}. Exemplos: ${sample}${missing.length>5 ? ', ...' : ''}`)
+    }
+  }
+
+  return { valid: errors.length === 0, errors, warnings }
+}
+function logTariffValidation(result, sourceLabel){
+  if (result.valid) console.info(`[dados] validação OK para ${sourceLabel}`)
+  if (result.warnings.length) console.warn(`[dados] avisos de validação para ${sourceLabel}:`, result.warnings)
+  if (!result.valid) console.error(`[dados] erros de validação para ${sourceLabel}:`, result.errors)
+}
 
 function applyRemotePayload(data, source='GitHub'){
+  const validation = validateTariffPayload(data)
+  logTariffValidation(validation, 'JSON remoto')
+  if (!validation.valid) throw new Error(`JSON remoto inválido. ${validation.errors.join(' | ')}`)
   if (!data || typeof data !== 'object') throw new Error('JSON remoto inválido')
   const remoteDaily = data.daily && typeof data.daily === 'object' ? data.daily : null
   const remoteTemplate = typeof data.messageTemplate === 'string' ? data.messageTemplate : null
+  const hasRemotePackageBreaks = Object.prototype.hasOwnProperty.call(data, 'packageBreaks')
+  const hasRemoteStayEquivalences = Object.prototype.hasOwnProperty.call(data, 'stayEquivalences')
+  const hasRemoteCheckinBlocks = Object.prototype.hasOwnProperty.call(data, 'checkinBlocks')
 
   let appliedDaily = false
   if (remoteDaily && countDailyEntries(remoteDaily) > 0){
-    DAILY = remoteDaily
+    const activeSource = source === 'GitHub' ? DATA_SOURCE_OFFICIAL :
+      source === 'Arquivo Cloudbeds — local' ? DATA_SOURCE_CLOUDBEDS_LOCAL : DATA_SOURCE_OFFICIAL
+    setActiveDaily(remoteDaily, activeSource)
     saveDaily(DAILY)
     appliedDaily = true
+    if (activeSource === DATA_SOURCE_OFFICIAL) logDataOnce('official-json', 'usando dados do JSON oficial')
+    if (activeSource === DATA_SOURCE_CLOUDBEDS_LOCAL) logDataOnce('cloudbeds-local', 'usando arquivo Cloudbeds aplicado somente neste navegador')
   }
 
   let appliedTemplate = false
@@ -356,18 +1008,48 @@ function applyRemotePayload(data, source='GitHub'){
     appliedTemplate = true
   }
 
+  let appliedPackageBreaks = false
+  if (hasRemotePackageBreaks){
+    savePackageBreaks(data.packageBreaks)
+    renderPackageBreaks()
+    appliedPackageBreaks = true
+  }
+
+  let appliedStayEquivalences = false
+  if (hasRemoteStayEquivalences){
+    saveStayEquivalences(data.stayEquivalences)
+    migrateLegacyCheckinBlocks(data.stayEquivalences)
+    renderStayEquivalences()
+    appliedStayEquivalences = true
+  }
+
+  let appliedCheckinBlocks = false
+  if (hasRemoteCheckinBlocks){
+    saveCheckinBlocks(data.checkinBlocks)
+    renderCheckinBlocks()
+    appliedCheckinBlocks = true
+  } else if (hasRemoteStayEquivalences){
+    renderCheckinBlocks()
+  }
+
   const meta = {
     source,
     version: data.version || '-',
     updatedAt: data.updatedAt || '-',
     loadedAt: new Date().toISOString(),
     dailyCount: appliedDaily ? countDailyEntries(DAILY) : countDailyEntries(loadDaily()),
-    templateLoaded: appliedTemplate
+    templateLoaded: appliedTemplate,
+    packageBreaksLoaded: appliedPackageBreaks,
+    packageBreaksCount: getPackageBreaks().length,
+    stayEquivalencesLoaded: appliedStayEquivalences,
+    stayEquivalencesCount:getStayEquivalences().length,
+    checkinBlocksLoaded:appliedCheckinBlocks,
+    checkinBlocksCount:getCheckinBlocks().length
   }
   saveDataMeta(meta)
   renderDataStatus()
 
-  if (!appliedDaily && !appliedTemplate){
+  if (!appliedDaily && !appliedTemplate && !appliedPackageBreaks && !appliedStayEquivalences && !appliedCheckinBlocks){
     throw new Error('O JSON remoto foi encontrado, mas não trouxe dados utilizáveis.')
   }
   if (!appliedDaily){
@@ -380,11 +1062,26 @@ function renderDataStatus(){
   const mini = document.getElementById('dataStatusMini')
   const meta = loadDataMeta()
   const dailyCount = countDailyEntries(loadDaily())
+  const packageBreaksCount = getPackageBreaks().length
+  const stayEquivalencesCount = getStayEquivalences().length
+  const checkinBlocksCount = getCheckinBlocks().length
+
+  if (INITIAL_SYNC_PENDING){
+    if (panel){
+      panel.className = 'preview muted'
+      panel.innerHTML = `Prioridade atual: <b>JSON oficial</b><br>Tentando carregar dados remotos...<br>Cache local disponível: <b>${dailyCount}</b> diárias, <b>${packageBreaksCount}</b> pacote(s), <b>${stayEquivalencesCount}</b> equivalência(s) e <b>${checkinBlocksCount}</b> bloqueio(s).`
+    }
+    if (mini){
+      mini.className = 'muted'
+      mini.textContent = `Dados: priorizando JSON oficial`
+    }
+    return
+  }
 
   if (!meta || (!meta.version && !meta.loadedAt)){
     if (panel){
       panel.className = 'preview muted'
-      panel.innerHTML = `Sem sincronização remota ainda.<br>Tarifário local: <b>${dailyCount}</b> diárias carregadas.`
+      panel.innerHTML = `Sem sincronização remota ainda.<br>Tarifário local: <b>${dailyCount}</b> diárias, <b>${packageBreaksCount}</b> pacote(s), <b>${stayEquivalencesCount}</b> equivalência(s) e <b>${checkinBlocksCount}</b> bloqueio(s).`
     }
     if (mini){
       mini.className = 'muted'
@@ -401,7 +1098,7 @@ function renderDataStatus(){
 
   if (panel){
     panel.className = `preview ${cls}`
-    panel.innerHTML = `Fonte: <b>${source}</b><br>Versão dos dados: <b>${version}</b><br>Atualizado em: <b>${updatedAt}</b><br>Última leitura: <b>${loadedAt}</b><br>Diárias carregadas: <b>${dailyCount}</b>.`
+    panel.innerHTML = `Fonte: <b>${source}</b><br>Versão dos dados: <b>${version}</b><br>Atualizado em: <b>${updatedAt}</b><br>Última leitura: <b>${loadedAt}</b><br>Diárias carregadas: <b>${dailyCount}</b>.<br>Pacotes e quebra: <b>${packageBreaksCount}</b>.<br>Equivalências: <b>${stayEquivalencesCount}</b>.<br>Bloqueios explícitos: <b>${checkinBlocksCount}</b>.`
   }
   if (mini){
     mini.className = cls
@@ -418,13 +1115,20 @@ async function syncRemoteData(showFeedback=true){
     if (!res.ok) throw new Error(`Falha ao baixar dados (${res.status})`)
     const data = await res.json()
     applyRemotePayload(data, 'GitHub')
+    INITIAL_SYNC_PENDING = false
+    renderDataStatus()
     if (showFeedback) alert('Dados oficiais atualizados com sucesso!')
   }catch(err){
     const localCount = countDailyEntries(loadDaily())
+    INITIAL_SYNC_PENDING = false
+    const hasLocalCache = applyLocalCacheFallback(err.message)
+    if (!hasLocalCache) activateHardcodedFallback(err.message)
     const previousMeta = loadDataMeta()
     saveDataMeta({
       ...previousMeta,
-      source: previousMeta.version ? 'cache local' : 'local',
+      source: hasLocalCache ? (previousMeta.version ? 'cache local' : 'local') : 'tabela hardcoded',
+      version: hasLocalCache ? (previousMeta.version || '-') : '-',
+      updatedAt: hasLocalCache ? (previousMeta.updatedAt || '-') : '-',
       loadedAt: new Date().toISOString()
     })
     renderDataStatus()
@@ -454,6 +1158,10 @@ function syncCheckoutWithCheckin(){
 function rateFromDaily(date){
   const s = ymd(date)
   if (DAILY[s] && (DAILY[s].base>0 || DAILY[s].extra>0 || DAILY[s].minStay>0 || DAILY[s].cta || DAILY[s].ctd)){
+    if (ACTIVE_DATA_SOURCE === DATA_SOURCE_OFFICIAL) logDataOnce('runtime-official', 'usando dados do JSON oficial')
+    if (ACTIVE_DATA_SOURCE === DATA_SOURCE_LOCAL_CACHE) logDataOnce('runtime-local-cache', 'fallback para localStorage')
+    if (ACTIVE_DATA_SOURCE === DATA_SOURCE_MANUAL_JSON) logDataOnce('runtime-manual-json', 'usando dados carregados por importação manual (JSON)')
+    if (ACTIVE_DATA_SOURCE === DATA_SOURCE_MANUAL_CSV) logDataOnce('runtime-manual-csv', 'usando dados carregados por importação manual (CSV)')
     const r = DAILY[s]
     return {valor: r.base>0? r.base : tarifaFallback(date).valor, extra: r.extra>0? r.extra : extraPadrao(s), minNoites: r.minStay||0, cta: !!r.cta, ctd: !!r.ctd}
   }
@@ -552,7 +1260,21 @@ function parseCSVText(text){
 const roomsEl = document.getElementById('rooms');
 let roomSeq = 0;
 function roomTemplate(id){
-  return `<div class=\"room\" data-room=\"${id}\">\n    <div class=\"roomHead\">\n      <div class=\"roomTitle\">Quarto #${id}</div>\n      <div class=\"actions\">\n        <button class=\"ghostBtn\" data-dup=\"${id}\">Duplicar</button>\n        <button class=\"ghostBtn\" data-del=\"${id}\">Remover</button>\n      </div>\n    </div>\n    <div class=\"miniRow\">\n      <div>\n        <label>Tipo de suíte</label>\n        <select data-field=\"suite\">\n          <option value=\"varanda\" selected>Com varanda (base)</option>\n          <option value=\"sem\">Sem varanda (−R$20/noite)</option>\n        </select>\n      </div>\n      <div>\n        <label>Adultos</label>\n        <input type=\"number\" data-field=\"adultos\" min=\"1\" value=\"2\" />\n      </div>\n      <div>\n        <label>Crianças (≥4)</label>\n        <input type=\"number\" data-field=\"criancas\" min=\"0\" value=\"0\" />\n      </div>\n      <div>\n        <label>Bebês (≤3)</label>\n        <input type=\"number\" data-field=\"bebes\" min=\"0\" value=\"0\" />\n      </div>\n      <div>\n        <label>Rótulo 2A</label>\n        <select data-field=\"rotulo2A\">\n          <option value=\"default\">Padrão (usar global)</option>\n          <option value=\"casal\">Forçar \"Casal\"</option>\n          <option value=\"adultos\">Forçar \"02 adultos\"</option>\n        </select>\n      </div>\n      <div>\n        <label>Rótulo customizado</label>\n        <input data-field=\"custom\" placeholder=\"Ex.: 3 solteiros, Casal + 1 adulto\" />\n      </div>\n    </div>\n  </div>`
+  return `<div class=\"room\" data-room=\"${id}\">\n    <div class=\"roomHead\">\n      <div class=\"roomTitle\">Quarto #${id}</div>\n      <div class=\"actions\">\n        <button class=\"ghostBtn\" data-dup=\"${id}\">Duplicar</button>\n        <button class=\"ghostBtn\" data-del=\"${id}\">Remover</button>\n      </div>\n    </div>\n    <div class=\"miniRow\">\n      <div>\n        <label>Tipo de suíte</label>\n        <select data-field=\"suite\">\n          <option value=\"varanda\" selected>Com varanda (base)</option>\n          <option value=\"sem\">Sem varanda (−R$20/noite)</option>\n        </select>\n      </div>\n      <div>\n        <label>Casal</label>\n        <select data-field=\"casal\">\n          <option value=\"1\" selected>Sim</option>\n          <option value=\"0\">Não</option>\n        </select>\n      </div>\n      <div>\n        <label>Solteiros</label>\n        <input type=\"number\" data-field=\"solteiros\" min=\"0\" step=\"1\" value=\"0\" />\n      </div>\n      <div>\n        <label>Crianças (≥4)</label>\n        <input type=\"number\" data-field=\"criancas\" min=\"0\" step=\"1\" value=\"0\" />\n      </div>\n      <div>\n        <label>Bebês (≤3)</label>\n        <input type=\"number\" data-field=\"bebes\" min=\"0\" step=\"1\" value=\"0\" />\n      </div>\n    </div>\n  </div>`
+}
+function nonNegativeInteger(value){
+  const number = Number(value)
+  return Number.isFinite(number) ? Math.max(0, Math.floor(number)) : 0
+}
+function normalizeRoomComposition(room={}){
+  if (Object.prototype.hasOwnProperty.call(room, 'casal') || Object.prototype.hasOwnProperty.call(room, 'solteiros')){
+    return { casal: room.casal === true || room.casal === 1 || room.casal === '1', solteiros: nonNegativeInteger(room.solteiros) }
+  }
+
+  // Compatibilidade com a estrutura anterior, caso uma composição antiga seja reutilizada internamente.
+  const adultos = nonNegativeInteger(room.adultos)
+  const casal = room.rotulo2A === 'casal' && adultos >= 2
+  return { casal, solteiros: casal ? adultos - 2 : adultos }
 }
 function addRoom(copyOf){
   roomSeq++;
@@ -562,12 +1284,12 @@ function addRoom(copyOf){
   const el = div.firstElementChild;
   roomsEl.appendChild(el);
   if(copyOf){
+    const composition = normalizeRoomComposition(copyOf)
     el.querySelector('[data-field="suite"]').value = copyOf.suite;
-    el.querySelector('[data-field="adultos"]').value = copyOf.adultos;
+    el.querySelector('[data-field="casal"]').value = composition.casal ? '1' : '0';
+    el.querySelector('[data-field="solteiros"]').value = composition.solteiros;
     el.querySelector('[data-field="criancas"]').value = copyOf.criancas;
     el.querySelector('[data-field="bebes"]').value = copyOf.bebes;
-    el.querySelector('[data-field="rotulo2A"]').value = copyOf.rotulo2A;
-    el.querySelector('[data-field="custom"]').value = copyOf.custom;
   }
 }
 function readRooms(){
@@ -576,11 +1298,10 @@ function readRooms(){
     out.push({
       id: +box.getAttribute('data-room'),
       suite: box.querySelector('[data-field="suite"]').value,
-      adultos: +box.querySelector('[data-field="adultos"]').value,
-      criancas: +box.querySelector('[data-field="criancas"]').value,
-      bebes: +box.querySelector('[data-field="bebes"]').value,
-      rotulo2A: box.querySelector('[data-field="rotulo2A"]').value,
-      custom: box.querySelector('[data-field="custom"]').value.trim()
+      casal: box.querySelector('[data-field="casal"]').value === '1',
+      solteiros: nonNegativeInteger(box.querySelector('[data-field="solteiros"]').value),
+      criancas: nonNegativeInteger(box.querySelector('[data-field="criancas"]').value),
+      bebes: nonNegativeInteger(box.querySelector('[data-field="bebes"]').value)
     })
   })
   return out;
@@ -598,10 +1319,125 @@ addRoom();
 /*********************
  * Cálculo (usa DAILY quando existir, senão fallback)
  *********************/
-function compLabel({adultos,criancas}, prefer2A){
-  const kids = criancas>0? ` + ${String(criancas).padStart(2,'0')} criança(s)` : ''
-  if (adultos===2){ if (prefer2A==='casal') return `Casal${kids}`; return `${String(adultos).padStart(2,'0')} adulto(s)${kids}`; }
-  return `${String(adultos).padStart(2,'0')} adulto(s)${kids}`;
+function quantityLabel(quantity, singular, plural){
+  return `${String(quantity).padStart(2,'0')} ${quantity === 1 ? singular : plural}`
+}
+function compLabel(room){
+  const { casal, solteiros } = normalizeRoomComposition(room)
+  const criancas = nonNegativeInteger(room.criancas)
+  const parts = []
+  if (casal) parts.push('Casal')
+  if (solteiros > 0) parts.push(quantityLabel(solteiros, 'solteiro', 'solteiros'))
+  if (criancas > 0) parts.push(quantityLabel(criancas, 'criança', 'crianças'))
+  return parts.join(' + ')
+}
+function countRoomGuests(room){
+  const { casal, solteiros } = normalizeRoomComposition(room)
+  const bebes = nonNegativeInteger(room.bebes)
+  const bebesCortesia = Math.min(bebes, 1)
+  const pagantes = (casal ? 2 : 0) + solteiros + nonNegativeInteger(room.criancas) + (bebes - bebesCortesia)
+  return { pagantes, bebesCortesia, extras: Math.max(0, pagantes - 2) }
+}
+function roomDescription(room){
+  const textoBebe = countRoomGuests(room).bebesCortesia === 1 ? ' + 01 criança não pagante' : ''
+  return compLabel(room) + textoBebe
+}
+function roundMoney(value){ return Math.round((Number(value) + Number.EPSILON) * 100) / 100 }
+function dateInPackage(date, packageConfig){ return date >= packageConfig.from && date < packageConfig.to }
+function packageNightDates(packageConfig){
+  const dates = []
+  if (packageDuration(packageConfig) < 1) return dates
+  for (let date=toLocalDate(packageConfig.from); ymd(date)<packageConfig.to; date=addDays(date,1)) dates.push(ymd(date))
+  return dates
+}
+function evaluatePackageBreaks(lines, packageBreaks, excludedAdjustmentDates=new Set()){
+  const lineAdjustments = Object.fromEntries(lines.map(line=>[line.data, 0]))
+  const eligibleDates = new Set()
+  const usages = []
+
+  for (const packageConfig of packageBreaks){
+    const duration = packageDuration(packageConfig)
+    const usedLines = lines.filter(line=>dateInPackage(line.data, packageConfig))
+    if (!usedLines.length) continue
+    const complete = usedLines.length === duration
+    const eligible = !complete && packageConfig.allowBreak && usedLines.length >= packageConfig.minNights
+    let totalAdjustment = 0
+    let adjustedNights = 0
+    let excludedByLegacy = 0
+
+    if (eligible){
+      for (const line of usedLines){
+        eligibleDates.add(line.data)
+        if (excludedAdjustmentDates.has(line.data)){
+          excludedByLegacy++
+          continue
+        }
+        const adjustment = packageConfig.surchargeType === 'percent' ?
+          roundMoney(line.base * packageConfig.surchargeValue / 100) : roundMoney(packageConfig.surchargeValue)
+        lineAdjustments[line.data] = roundMoney(lineAdjustments[line.data] + adjustment)
+        totalAdjustment = roundMoney(totalAdjustment + adjustment)
+        adjustedNights++
+      }
+    }
+
+    usages.push({
+      packageConfig,
+      duration,
+      usedNights:usedLines.length,
+      complete,
+      eligible,
+      adjustedNights,
+      excludedByLegacy,
+      totalAdjustment
+    })
+  }
+
+  return {
+    lineAdjustments,
+    eligibleDates,
+    usages,
+    totalAdjustment:roundMoney(Object.values(lineAdjustments).reduce((sum,value)=>sum+value,0))
+  }
+}
+function calculateRoomFinancials(room, lines, legacyComplete=false){
+  const { extras } = countRoomGuests(room)
+  const legacyDates = packageNightDates(pacoteNov)
+  let totalBase = lines.reduce((sum,line)=>sum + line.base + (line.packageAdjustment || 0), 0)
+  let totalExtras = lines.reduce((sum,line)=>sum + line.extraVlr * extras, 0)
+
+  if (legacyComplete){
+    totalBase = lines.filter(line=>!dateInPackage(line.data, pacoteNov)).reduce((sum,line)=>sum + line.base + (line.packageAdjustment || 0), 0) + pacoteNov.valorCasal
+    totalExtras = lines.filter(line=>!dateInPackage(line.data, pacoteNov)).reduce((sum,line)=>sum + line.extraVlr * extras, 0) + extras * pacoteNov.extra * legacyDates.length
+  }
+
+  const ajusteSuite = room.suite === 'sem' ? -20 * lines.length : 0
+  return { totalBase:roundMoney(totalBase), totalExtras:roundMoney(totalExtras), ajusteSuite:roundMoney(ajusteSuite), subtotal:roundMoney(totalBase + totalExtras + ajusteSuite) }
+}
+function buildPricingLines(from, to){
+  const lines = []
+  let outsideTariff = false
+  let manualSpecial = false
+  for (const date of noitesIter(from,to)){
+    const rate = rateFromDaily(date)
+    if (rate.especial) manualSpecial = true
+    if (rate.fora) outsideTariff = true
+    lines.push({data:ymd(date), base:rate.valor, extraVlr:rate.extra, min:rate.minNoites||0, especial:!!rate.especial, fora:!!rate.fora, packageAdjustment:0})
+  }
+  return { lines, outsideTariff, manualSpecial }
+}
+function analyzeLegacyUsage(lines){
+  const nightDates = packageNightDates(pacoteNov)
+  const lineDates = new Set(lines.map(line=>line.data))
+  const usedDates = nightDates.filter(date=>lineDates.has(date))
+  const complete = nightDates.length === pacoteNov.noites && nightDates.every(date=>lineDates.has(date))
+  return { nightDates, usedDates, complete, partial:usedDates.length>0 && !complete }
+}
+function referencePricingIssue(referenceLines, expectedNights){
+  if (referenceLines.length !== expectedNights) return 'A duração calculada da referência diverge da estadia alternativa.'
+  if (referenceLines.some(line=>line.especial)) return 'O período de referência ainda depende de tratamento manual de pacote especial.'
+  if (referenceLines.some(line=>line.fora || !Number.isFinite(line.base) || line.base <= 0)) return 'O período de referência não possui tarifas-base completas e positivas para cálculo automático.'
+  if (analyzeLegacyUsage(referenceLines).partial) return 'O período de referência usa apenas parte de um pacote legado e ainda depende de tratamento manual.'
+  return ''
 }
 
 function* noitesIter(ci, co){ let d = toLocalDate(ci); const coS = ymd(co); while (ymd(d) < coS) { yield toLocalDate(d); d = addDays(d,1) } }
@@ -609,7 +1445,6 @@ function* noitesIter(ci, co){ let d = toLocalDate(ci); const coS = ymd(co); whil
 function calc(forceOverride=false){
   const ci = document.getElementById('checkin').value
   const co = document.getElementById('checkout').value
-  const label2A = document.getElementById('label2A').value
   const obs = document.getElementById('obs').value.trim()
   const out = document.getElementById('resumo')
   const tab = document.getElementById('tabela')
@@ -623,30 +1458,49 @@ function calc(forceOverride=false){
   if(!ci||!co){ out.innerHTML='<span class="warn">Escolha check-in e check-out.</span>'; return }
   if (ymd(ci) >= ymd(co)) { out.innerHTML='<span class="err">Check-out deve ser após o check-in.</span>'; return }
   if (rooms.length===0){ out.innerHTML='<span class="warn">Adicione ao menos 1 quarto.</span>'; return }
+  const quartoSemAdulto = rooms.find(room=>{
+    const composition = normalizeRoomComposition(room)
+    return !composition.casal && composition.solteiros===0
+  })
+  if (quartoSemAdulto){ out.innerHTML=`<span class="warn">Informe casal ou ao menos 01 solteiro no Quarto #${quartoSemAdulto.id}.</span>`; return }
+  if (INITIAL_SYNC_PENDING){
+    out.innerHTML='<span class="warn">Aguarde o carregamento dos dados oficiais antes de calcular.</span>'
+    return
+  }
+
+  const explicitCheckinBlock = findExplicitCheckinBlock(ci)
+  if (explicitCheckinBlock){
+    const blockedDate = ci.split('-').reverse().join('/')
+    const ruleName = escapeTariffHtml(explicitCheckinBlock.name)
+    out.innerHTML = `<span class="err">Check-in em ${blockedDate} bloqueado pela equivalência "${ruleName}".</span>`
+    alert.innerHTML = '<div class="err">Este bloqueio é rígido e não pode ser liberado pela sobreposição manual de CTA, CTD ou estadia mínima.</div>'
+    return
+  }
 
   // Regras CTA/CTD & min noites pelo dia de entrada/saída (via DAILY)
   const ciRate = rateFromDaily(ci)
   const coRate = rateFromDaily(co)
 
-  // Construção das noites
-  let linhas = []
-  let noites = 0
-  let foraTabela = false
-  let temReveillon = false
+  const actualPricing = buildPricingLines(ci, co)
+  const actualLines = actualPricing.lines
+  const noites = actualLines.length
+  const matchedEquivalence = findStayEquivalence(ci, co)
   let minEntrada = ciRate.minNoites||0
-
-  for (const d of noitesIter(ci, co)){
-    noites++
-    const r = rateFromDaily(d)
-    if (r.especial){ temReveillon = true }
-    if (r.fora){ foraTabela = true }
-    linhas.push({data: ymd(d), base:r.valor, extraVlr:r.extra, min:r.minNoites||0})
-  }
+  const actualLegacyUsage = analyzeLegacyUsage(actualLines)
+  const preliminaryPackageEvaluation = matchedEquivalence ? {usages:[]} : evaluatePackageBreaks(
+    actualLines,
+    getPackageBreaks(),
+    actualLegacyUsage.complete ? new Set(actualLegacyUsage.nightDates) : new Set()
+  )
+  const eligibleBreakAtCheckin = preliminaryPackageEvaluation.usages.some(usage=>usage.eligible && dateInPackage(ci, usage.packageConfig))
 
   const violacoes = []
   if (ciRate.cta) violacoes.push(`⛔ O dia de check-in (${ci.split('-').reverse().join('/')}) está <b>fechado para chegada</b> (CTA).`)
   if (coRate.ctd) violacoes.push(`⛔ O dia de check-out (${co.split('-').reverse().join('/')}) está <b>fechado para partida</b> (CTD).`)
-  if (minEntrada>0 && noites < minEntrada) violacoes.push(`⛔ Estadia mínima de <b>${minEntrada} diárias</b> para a data de entrada (${ci.split('-').reverse().join('/')}).`)
+  if (minEntrada>0 && noites < minEntrada){
+    const breakNote = eligibleBreakAtCheckin ? '<br>Há uma quebra elegível cadastrada, mas o DAILY não identifica a origem do minStay; mantenha a confirmação manual. CTA/CTD eventualmente listadas continuam exigindo avaliação.' : ''
+    violacoes.push(`⛔ Estadia mínima de <b>${minEntrada} diárias</b> para a data de entrada (${ci.split('-').reverse().join('/')}).${breakNote}`)
+  }
 
   if (!forceOverride && violacoes.length){
     showOverrideDialog(violacoes)
@@ -657,56 +1511,81 @@ function calc(forceOverride=false){
     alert.innerHTML += `<div class="warn">⚠️ Restrições sobrepostas manualmente para este cálculo.</div>`
   }
 
+  let linhas = actualLines
+  let appliedEquivalence = null
+  let foraTabela = actualPricing.outsideTariff
+  let temReveillon = actualPricing.manualSpecial
+  if (matchedEquivalence){
+    const referencePricing = buildPricingLines(matchedEquivalence.referenceFrom, matchedEquivalence.referenceTo)
+    const referenceIssue = referencePricingIssue(referencePricing.lines, noites)
+    if (referenceIssue){
+      const ruleName = escapeTariffHtml(matchedEquivalence.name)
+      out.innerHTML = `<span class="err">Não foi possível aplicar a equivalência "${ruleName}": ${escapeTariffHtml(referenceIssue)}</span>`
+      alert.innerHTML += '<div class="warn">A estadia real foi preservada, mas nenhum valor ou mensagem foi gerado. Revise a referência cadastrada.</div>'
+      return
+    }
+    linhas = referencePricing.lines.map((line, index)=>({...line, realData:actualLines[index].data, referenceData:line.data}))
+    appliedEquivalence = matchedEquivalence
+    foraTabela = referencePricing.outsideTariff
+    temReveillon = false
+  }
+
+  const legacyUsage = analyzeLegacyUsage(linhas)
+  const legacyComplete = legacyUsage.complete
+  const legacyUsedDates = legacyUsage.usedDates
+  const excludedAdjustmentDates = legacyComplete ? new Set(legacyUsage.nightDates) : new Set()
+  const packageEvaluation = appliedEquivalence ? evaluatePackageBreaks(linhas, []) : evaluatePackageBreaks(linhas, getPackageBreaks(), excludedAdjustmentDates)
+  linhas.forEach(line=>{ line.packageAdjustment = packageEvaluation.lineAdjustments[line.data] || 0 })
+
   // Tabela por noite (preview de base/extra)
-  const hdr = `<tr><th>Data</th><th>Dia</th><th>Tarifa base (casal)</th><th>Extra/pessoa</th></tr>`
+  const hdr = appliedEquivalence ?
+    `<tr><th>Data da estadia</th><th>Data de referência</th><th>Dia da referência</th><th>Tarifa base da referência (até 2 pagantes)</th><th>Extra/pessoa da referência</th></tr>` :
+    `<tr><th>Data</th><th>Dia</th><th>Tarifa base (até 2 pagantes)</th><th>Ajuste de quebra</th><th>Extra/pessoa</th></tr>`
   const rows = linhas.map(l=>{
     const dt = toLocalDate(l.data)
     const dia = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][dow(dt)]
-    return `<tr><td style="white-space:nowrap">${l.data}</td><td>${dia}</td><td>${fmtBR(l.base)}</td><td>${fmtBR(l.extraVlr)}</td></tr>`
+    if (appliedEquivalence) return `<tr><td style="white-space:nowrap">${l.realData}</td><td style="white-space:nowrap">${l.referenceData}</td><td>${dia}</td><td>${fmtBR(l.base)}</td><td>${fmtBR(l.extraVlr)}</td></tr>`
+    return `<tr><td style="white-space:nowrap">${l.data}</td><td>${dia}</td><td>${fmtBR(l.base)}</td><td>${l.packageAdjustment ? fmtBR(l.packageAdjustment) : '—'}</td><td>${fmtBR(l.extraVlr)}</td></tr>`
   }).join('')
-  tab.innerHTML = `<thead>${hdr}</thead><tbody>${rows}</tbody><tfoot><tr><td colspan="2">Noites</td><td colspan="2">${noites}</td></tr></tfoot>`
+  tab.innerHTML = `<thead>${hdr}</thead><tbody>${rows}</tbody><tfoot><tr><td colspan="2">Noites</td><td colspan="3">${noites}</td></tr></tfoot>`
   tab.style.display='table'
+
+  const legacyPartial = legacyUsedDates.length>0 && !legacyComplete
+  const legacyPartialFullyHandled = legacyPartial && legacyUsedDates.every(date=>packageEvaluation.eligibleDates.has(date))
+  if (legacyPartial && !legacyPartialFullyHandled){
+    alert.innerHTML += `<div class="warn">⚠️ Período legado 20–23/11: estadia parcial. Use o mínimo do pacote se desejar forçar o valor (manual).</div>`
+  }
 
   // Cálculo por quarto
   function calcRoom(r){
-    const totalPessoas = r.adultos + r.criancas + r.bebes
-    const bebesCortesia = Math.min(r.bebes, 1)
-    const textoBebe = bebesCortesia === 1 ? ' + 01 criança não pagante' : ''
-    const elegiveisBase = 2 + bebesCortesia
-    const extras = Math.max(0, totalPessoas - elegiveisBase)
-
-    let totalBase = 0, totalExtras = 0
-    let pacoteCount = 0
-
-    for(const l of linhas){
-      if (within(l.data, pacoteNov.from, pacoteNov.to)) pacoteCount++
-      totalBase += l.base
-      totalExtras += l.extraVlr * extras
-    }
-
-    const ajusteSuite = (r.suite==='sem') ? -20*noites : 0
-
-    if (pacoteCount===pacoteNov.noites){
-      const baseFora = linhas.filter(l=>!(within(l.data, pacoteNov.from, pacoteNov.to))).reduce((a,b)=>a+b.base,0)
-      totalBase = baseFora + pacoteNov.valorCasal
-      const totalExtrasFora = linhas.filter(l=>!(within(l.data, pacoteNov.from, pacoteNov.to))).reduce((a,b)=>a + b.extraVlr*extras,0)
-      const totalExtrasPac = extras * pacoteNov.extra * pacoteNov.noites
-      totalExtras = totalExtrasFora + totalExtrasPac
-    } else if (pacoteCount>0 && pacoteCount<pacoteNov.noites){
-      alert.innerHTML += `<div class="warn">⚠️ Período 20–23/11: estadia parcial. Use o mínimo do pacote se desejar forçar o valor (manual).</div>`
-    }
-
-    const subtotal = totalBase + totalExtras + ajusteSuite
-
-    let prefer2A = (r.rotulo2A==='default') ? (label2A==='casal'?'casal':'adultos') : r.rotulo2A
-    const baseLabel = r.custom || compLabel(r, prefer2A)
-    const descr = baseLabel + textoBebe
-
-    return { subtotal, descr, suite:r.suite }
+    const descr = roomDescription(r)
+    const financials = calculateRoomFinancials(r, linhas, legacyComplete)
+    return { subtotal:financials.subtotal, descr, suite:r.suite }
   }
 
-  const roomResults = readRooms().map(calcRoom)
+  const roomResults = rooms.map(calcRoom)
   const totalGeral = roomResults.reduce((a,b)=>a+b.subtotal,0)
+
+  const partialPackageUsages = packageEvaluation.usages.filter(usage=>!usage.complete)
+  if (appliedEquivalence){
+    regras.style.display = 'block'
+    regras.innerHTML = `<div><b>Equivalência aplicada: ${escapeTariffHtml(appliedEquivalence.name)}</b></div><div>Estadia solicitada: ${ci.split('-').reverse().join('/')} a ${co.split('-').reverse().join('/')}.</div><div>Preços de referência: ${appliedEquivalence.referenceFrom.split('-').reverse().join('/')} a ${appliedEquivalence.referenceTo.split('-').reverse().join('/')}.</div><div><b>Preço total aplicado:</b> ${fmtBR(totalGeral)}</div><div style="margin-top:4px">Datas, restrições e mensagem permanecem vinculadas à estadia solicitada. Quebras de pacote não são reaplicadas sobre a referência.</div>`
+  } else if (partialPackageUsages.length){
+    const details = partialPackageUsages.map(usage=>{
+      const packageConfig = usage.packageConfig
+      let status
+      if (!packageConfig.allowBreak) status = 'quebra desligada; sem ajuste'
+      else if (!usage.eligible) status = `abaixo do mínimo de ${packageConfig.minNights} noite(s) interna(s); sem ajuste`
+      else if (usage.excludedByLegacy && usage.adjustedNights===0) status = 'valor fechado do pacote legado preservado; sem dupla cobrança'
+      else status = 'quebra elegível'
+      return `<div><b>${escapeTariffHtml(packageConfig.name)}</b>: ${usage.usedNights}/${usage.duration} noites utilizadas · ${usage.adjustedNights} noite(s) ajustada(s) · regra ${escapeTariffHtml(formatPackageSurcharge(packageConfig))} · ${escapeTariffHtml(status)} · total ${fmtBR(roundMoney(usage.totalAdjustment * rooms.length))}</div>`
+    }).join('')
+    regras.style.display = 'block'
+    regras.innerHTML = `<div><b>Conferência de pacotes parcialmente utilizados</b></div>${details}<div style="margin-top:4px"><b>Total acrescentado:</b> ${fmtBR(roundMoney(packageEvaluation.totalAdjustment * rooms.length))}</div>`
+  } else {
+    regras.style.display = 'none'
+    regras.textContent = ''
+  }
 
   // Resumo visual
   const msgAlert = foraTabela ? '⚠️ Há datas fora do tarifário padrão (usando fallback).' : ''
@@ -730,7 +1609,7 @@ function calc(forceOverride=false){
 `Valor de orçamento assegurado de reajustes por até 24h!\n\n`+
 `${templateExtra}${obs ? `\n\nObs.: ${obs}` : ''}`)
 
-  if (temReveillon){ alert.innerHTML += `<div class="warn">🎆 Réveillon possui pacotes: 29/12–02/01 (4 diárias R$ 4.700) ou 30/12–02/01 (3 diárias R$ 3.900). Extensões usam valor de 4 diárias. Trate manualmente.</div>` }
+  if (temReveillon){ alert.innerHTML += `<div class="warn">🎆 Regra legada do Réveillon 2025/2026: o código registra apenas o aviso histórico de 29/12–02/01 (4 diárias R$ 4.700) ou 30/12–02/01 (3 diárias R$ 3.900), sem aplicar esses valores ao cálculo. Trate manualmente.</div>` }
 }
 
 
@@ -798,7 +1677,6 @@ document.getElementById('calc').addEventListener('click', ()=> calc())
 
 document.getElementById('limpar').addEventListener('click', ()=>{
   ['checkin','checkout','obs'].forEach(id=>document.getElementById(id).value='')
-  document.getElementById('label2A').value='auto'
   roomsEl.innerHTML=''; roomSeq=0; addRoom();
   document.getElementById('resumo').innerHTML='Formulário limpo.'
   document.getElementById('mensagem').value=''
@@ -833,10 +1711,350 @@ function activateTab(id){
   document.getElementById('tab-csv').style.display = id==='csv'?'block':'none'
   document.getElementById('tab-sync').style.display = id==='sync'?'block':'none'
   document.getElementById('tab-backup').style.display = id==='backup'?'block':'none'
+  document.getElementById('tab-packages').style.display = id==='packages'?'block':'none'
   document.getElementById('tab-texto').style.display = id==='texto'?'block':'none'
 }
 activateTab('csv')
 for (const t of tabs){ t.addEventListener('click', ()=> activateTab(t.dataset.tab)) }
+
+const packageEditorTitle = document.getElementById('packageEditorTitle')
+const packageName = document.getElementById('packageName')
+const packageFrom = document.getElementById('packageFrom')
+const packageTo = document.getElementById('packageTo')
+const packageAllowBreak = document.getElementById('packageAllowBreak')
+const packageMinNights = document.getElementById('packageMinNights')
+const packageSurchargeType = document.getElementById('packageSurchargeType')
+const packageSurchargeValue = document.getElementById('packageSurchargeValue')
+const packageSaveBtn = document.getElementById('packageSaveBtn')
+const packageCancelBtn = document.getElementById('packageCancelBtn')
+const packageEditorStatus = document.getElementById('packageEditorStatus')
+const packageList = document.getElementById('packageList')
+let editingPackageId = null
+
+function createPackageId(){
+  if (window.crypto && typeof window.crypto.randomUUID === 'function') return window.crypto.randomUUID()
+  return `pkg-${Date.now()}-${Math.random().toString(16).slice(2)}`
+}
+function formatPackageSurcharge(packageConfig){
+  if (packageConfig.surchargeType === 'percent') return `${packageConfig.surchargeValue.toLocaleString('pt-BR')}% da base/noite`
+  return `${fmtBR(packageConfig.surchargeValue)} por diária`
+}
+function resetPackageEditor(){
+  editingPackageId = null
+  if (packageEditorTitle) packageEditorTitle.textContent = 'Novo pacote'
+  if (packageName) packageName.value = ''
+  if (packageFrom) packageFrom.value = ''
+  if (packageTo) packageTo.value = ''
+  if (packageAllowBreak) packageAllowBreak.checked = false
+  if (packageMinNights) packageMinNights.value = '1'
+  if (packageSurchargeType) packageSurchargeType.value = 'percent'
+  if (packageSurchargeValue) packageSurchargeValue.value = '0'
+  if (packageCancelBtn) packageCancelBtn.style.display = 'none'
+  if (packageEditorStatus){ packageEditorStatus.className = 'hint'; packageEditorStatus.textContent = 'A quebra fica desligada por padrão.' }
+}
+function renderPackageBreaks(){
+  if (!packageList) return
+  const packageBreaks = getPackageBreaks().sort((a,b)=>a.from.localeCompare(b.from))
+  if (!packageBreaks.length){
+    packageList.innerHTML = '<div class="hint" style="padding:10px">Nenhum pacote cadastrado. Sem configuração, o cálculo permanece igual ao anterior.</div>'
+    return
+  }
+  const rows = packageBreaks.map(packageConfig=>`
+    <tr>
+      <td class="package-name"><b>${escapeTariffHtml(packageConfig.name)}</b></td>
+      <td>${formatTariffDate(packageConfig.from)} a ${formatTariffDate(packageConfig.to)}<br><span class="muted">${packageDuration(packageConfig)} noites; saída exclusiva</span></td>
+      <td>${packageConfig.allowBreak ? '<span class="ok">Permitida</span>' : '<span class="muted">Desligada</span>'}</td>
+      <td>${packageConfig.minNights} noite(s) interna(s)</td>
+      <td>${escapeTariffHtml(formatPackageSurcharge(packageConfig))}</td>
+      <td><div class="package-actions"><button type="button" class="ghostBtn" data-package-edit="${escapeTariffHtml(packageConfig.id)}">Editar</button><button type="button" class="ghostBtn" data-package-delete="${escapeTariffHtml(packageConfig.id)}">Excluir</button></div></td>
+    </tr>`).join('')
+  packageList.innerHTML = `<table><thead><tr><th>Nome</th><th>Período</th><th>Quebra</th><th>Mínimo</th><th>Acréscimo</th><th>Ações</th></tr></thead><tbody>${rows}</tbody></table>`
+}
+function readPackageEditor(){
+  return {
+    id:editingPackageId || createPackageId(),
+    name:(packageName && packageName.value || '').trim(),
+    from:packageFrom && packageFrom.value || '',
+    to:packageTo && packageTo.value || '',
+    allowBreak:!!(packageAllowBreak && packageAllowBreak.checked),
+    minNights:Number(packageMinNights && packageMinNights.value),
+    surchargeType:packageSurchargeType && packageSurchargeType.value || '',
+    surchargeValue:Number(packageSurchargeValue && packageSurchargeValue.value)
+  }
+}
+function markPackageConfigurationChanged(){
+  if (typeof tariffUpdateState !== 'undefined' && tariffUpdateState.result){
+    invalidateTariffAnalysis('Os pacotes foram alterados. A análise anterior foi descartada para manter o payload consistente.')
+  }
+}
+function savePackageEditor(){
+  const candidate = readPackageEditor()
+  const current = getPackageBreaks()
+  const next = editingPackageId ? current.map(packageConfig=>packageConfig.id===editingPackageId ? candidate : packageConfig) : [...current, candidate]
+  const validation = validatePackageBreaks(next)
+  if (!validation.valid){
+    packageEditorStatus.className = 'err'
+    packageEditorStatus.textContent = validation.errors.join(' | ')
+    return
+  }
+  try{
+    savePackageBreaks(next)
+    markPackageConfigurationChanged()
+    renderPackageBreaks()
+    renderDataStatus()
+    resetPackageEditor()
+    packageEditorStatus.className = 'ok'
+    packageEditorStatus.textContent = 'Pacote salvo neste navegador e incluído em exportações/publicações de teste futuras.'
+  }catch(error){
+    packageEditorStatus.className = 'err'
+    packageEditorStatus.textContent = error.message
+  }
+}
+function editPackage(packageId){
+  const packageConfig = getPackageBreaks().find(item=>item.id===packageId)
+  if (!packageConfig) return
+  editingPackageId = packageConfig.id
+  packageEditorTitle.textContent = `Editar pacote: ${packageConfig.name}`
+  packageName.value = packageConfig.name
+  packageFrom.value = packageConfig.from
+  packageTo.value = packageConfig.to
+  packageAllowBreak.checked = packageConfig.allowBreak
+  packageMinNights.value = String(packageConfig.minNights)
+  packageSurchargeType.value = packageConfig.surchargeType
+  packageSurchargeValue.value = String(packageConfig.surchargeValue)
+  packageCancelBtn.style.display = ''
+  packageEditorStatus.className = 'hint'
+  packageEditorStatus.textContent = 'Edite os campos e salve para substituir esta configuração.'
+}
+function deletePackage(packageId){
+  const packageConfig = getPackageBreaks().find(item=>item.id===packageId)
+  if (!packageConfig || !confirm(`Excluir o pacote "${packageConfig.name}"?`)) return
+  savePackageBreaks(getPackageBreaks().filter(item=>item.id!==packageId))
+  markPackageConfigurationChanged()
+  if (editingPackageId===packageId) resetPackageEditor()
+  renderPackageBreaks()
+  renderDataStatus()
+  packageEditorStatus.className = 'ok'
+  packageEditorStatus.textContent = 'Pacote excluído deste navegador.'
+}
+if (packageSaveBtn) packageSaveBtn.addEventListener('click', savePackageEditor)
+if (packageCancelBtn) packageCancelBtn.addEventListener('click', resetPackageEditor)
+if (packageList) packageList.addEventListener('click', event=>{
+  const editId = event.target.getAttribute('data-package-edit')
+  const deleteId = event.target.getAttribute('data-package-delete')
+  if (editId) editPackage(editId)
+  if (deleteId) deletePackage(deleteId)
+})
+renderPackageBreaks()
+
+const equivalenceEditorTitle = document.getElementById('equivalenceEditorTitle')
+const equivalenceName = document.getElementById('equivalenceName')
+const equivalenceActive = document.getElementById('equivalenceActive')
+const equivalenceReferenceFrom = document.getElementById('equivalenceReferenceFrom')
+const equivalenceReferenceTo = document.getElementById('equivalenceReferenceTo')
+const equivalenceAlternativeFrom = document.getElementById('equivalenceAlternativeFrom')
+const equivalenceAlternativeTo = document.getElementById('equivalenceAlternativeTo')
+const equivalenceSaveBtn = document.getElementById('equivalenceSaveBtn')
+const equivalenceCancelBtn = document.getElementById('equivalenceCancelBtn')
+const equivalenceEditorStatus = document.getElementById('equivalenceEditorStatus')
+const equivalenceList = document.getElementById('equivalenceList')
+let editingEquivalenceId = null
+
+function parseBlockedCheckins(value){
+  return [...new Set(String(value || '').split(/[,;\s]+/).map(date=>date.trim()).filter(Boolean))].sort()
+}
+function resetEquivalenceEditor(){
+  editingEquivalenceId = null
+  equivalenceEditorTitle.textContent = 'Nova equivalência de estadia'
+  equivalenceName.value = ''
+  equivalenceActive.value = '0'
+  equivalenceReferenceFrom.value = ''
+  equivalenceReferenceTo.value = ''
+  equivalenceAlternativeFrom.value = ''
+  equivalenceAlternativeTo.value = ''
+  equivalenceCancelBtn.style.display = 'none'
+  equivalenceEditorStatus.className = 'hint'
+  equivalenceEditorStatus.textContent = 'Nenhuma equivalência é cadastrada automaticamente.'
+}
+function renderStayEquivalences(){
+  if (!equivalenceList) return
+  const equivalences = getStayEquivalences().sort((a,b)=>a.alternativeFrom.localeCompare(b.alternativeFrom))
+  if (!equivalences.length){
+    equivalenceList.innerHTML = '<div class="hint" style="padding:10px">Nenhuma equivalência cadastrada.</div>'
+    return
+  }
+  const rows = equivalences.map(equivalence=>`
+    <tr>
+      <td class="package-name"><b>${escapeTariffHtml(equivalence.name)}</b><br>${equivalence.active ? '<span class="ok">Ativa</span>' : '<span class="muted">Inativa</span>'}</td>
+      <td>${formatTariffDate(equivalence.referenceFrom)} a ${formatTariffDate(equivalence.referenceTo)}<br><span class="muted">${packageDuration({from:equivalence.referenceFrom,to:equivalence.referenceTo})} noites</span></td>
+      <td>${formatTariffDate(equivalence.alternativeFrom)} a ${formatTariffDate(equivalence.alternativeTo)}</td>
+      <td><div class="package-actions"><button type="button" class="ghostBtn" data-equivalence-edit="${escapeTariffHtml(equivalence.id)}">Editar</button><button type="button" class="ghostBtn" data-equivalence-delete="${escapeTariffHtml(equivalence.id)}">Excluir</button></div></td>
+    </tr>`).join('')
+  equivalenceList.innerHTML = `<table><thead><tr><th>Nome</th><th>Referência</th><th>Alternativa</th><th>Ações</th></tr></thead><tbody>${rows}</tbody></table>`
+}
+function readEquivalenceEditor(){
+  return {
+    id:editingEquivalenceId || createPackageId(),
+    name:equivalenceName.value.trim(),
+    active:equivalenceActive.value === '1',
+    referenceFrom:equivalenceReferenceFrom.value,
+    referenceTo:equivalenceReferenceTo.value,
+    alternativeFrom:equivalenceAlternativeFrom.value,
+    alternativeTo:equivalenceAlternativeTo.value
+  }
+}
+function saveEquivalenceEditor(){
+  const candidate = readEquivalenceEditor()
+  const current = getStayEquivalences()
+  const next = editingEquivalenceId ? current.map(equivalence=>equivalence.id===editingEquivalenceId ? candidate : equivalence) : [...current,candidate]
+  const validation = validateStayEquivalences(next)
+  if (!validation.valid){
+    equivalenceEditorStatus.className = 'err'
+    equivalenceEditorStatus.textContent = validation.errors.join(' | ')
+    return
+  }
+  try{
+    saveStayEquivalences(next)
+    markPackageConfigurationChanged()
+    renderStayEquivalences()
+    renderDataStatus()
+    resetEquivalenceEditor()
+    equivalenceEditorStatus.className = 'ok'
+    equivalenceEditorStatus.textContent = 'Equivalência salva neste navegador e incluída em exportações/publicações de teste futuras.'
+  }catch(error){
+    equivalenceEditorStatus.className = 'err'
+    equivalenceEditorStatus.textContent = error.message
+  }
+}
+function editEquivalence(equivalenceId){
+  const equivalence = getStayEquivalences().find(item=>item.id===equivalenceId)
+  if (!equivalence) return
+  editingEquivalenceId = equivalence.id
+  equivalenceEditorTitle.textContent = `Editar equivalência: ${equivalence.name}`
+  equivalenceName.value = equivalence.name
+  equivalenceActive.value = equivalence.active ? '1' : '0'
+  equivalenceReferenceFrom.value = equivalence.referenceFrom
+  equivalenceReferenceTo.value = equivalence.referenceTo
+  equivalenceAlternativeFrom.value = equivalence.alternativeFrom
+  equivalenceAlternativeTo.value = equivalence.alternativeTo
+  equivalenceCancelBtn.style.display = ''
+  equivalenceEditorStatus.className = 'hint'
+  equivalenceEditorStatus.textContent = 'Edite os campos e salve para substituir esta configuração.'
+}
+function deleteEquivalence(equivalenceId){
+  const equivalence = getStayEquivalences().find(item=>item.id===equivalenceId)
+  if (!equivalence || !confirm(`Excluir a equivalência "${equivalence.name}"?`)) return
+  saveStayEquivalences(getStayEquivalences().filter(item=>item.id!==equivalenceId))
+  markPackageConfigurationChanged()
+  if (editingEquivalenceId===equivalenceId) resetEquivalenceEditor()
+  renderStayEquivalences()
+  renderDataStatus()
+  equivalenceEditorStatus.className = 'ok'
+  equivalenceEditorStatus.textContent = 'Equivalência excluída deste navegador.'
+}
+if (equivalenceSaveBtn) equivalenceSaveBtn.addEventListener('click', saveEquivalenceEditor)
+if (equivalenceCancelBtn) equivalenceCancelBtn.addEventListener('click', resetEquivalenceEditor)
+if (equivalenceList) equivalenceList.addEventListener('click', event=>{
+  const editId = event.target.getAttribute('data-equivalence-edit')
+  const deleteId = event.target.getAttribute('data-equivalence-delete')
+  if (editId) editEquivalence(editId)
+  if (deleteId) deleteEquivalence(deleteId)
+})
+renderStayEquivalences()
+
+const checkinBlockEditorTitle = document.getElementById('checkinBlockEditorTitle')
+const checkinBlockName = document.getElementById('checkinBlockName')
+const checkinBlockActive = document.getElementById('checkinBlockActive')
+const checkinBlockDates = document.getElementById('checkinBlockDates')
+const checkinBlockSaveBtn = document.getElementById('checkinBlockSaveBtn')
+const checkinBlockCancelBtn = document.getElementById('checkinBlockCancelBtn')
+const checkinBlockEditorStatus = document.getElementById('checkinBlockEditorStatus')
+const checkinBlockList = document.getElementById('checkinBlockList')
+let editingCheckinBlockId = null
+
+function resetCheckinBlockEditor(){
+  editingCheckinBlockId = null
+  checkinBlockEditorTitle.textContent = 'Novo bloqueio explícito de check-in'
+  checkinBlockName.value = ''
+  checkinBlockActive.value = '1'
+  checkinBlockDates.value = ''
+  checkinBlockCancelBtn.style.display = 'none'
+  checkinBlockEditorStatus.className = 'hint'
+  checkinBlockEditorStatus.textContent = 'Nenhum bloqueio é cadastrado automaticamente.'
+}
+function renderCheckinBlocks(){
+  if (!checkinBlockList) return
+  const blocks = getCheckinBlocks().sort((a,b)=>a.dates[0].localeCompare(b.dates[0]))
+  if (!blocks.length){
+    checkinBlockList.innerHTML = '<div class="hint" style="padding:10px">Nenhum bloqueio explícito cadastrado.</div>'
+    return
+  }
+  const rows = blocks.map(block=>`
+    <tr>
+      <td class="package-name"><b>${escapeTariffHtml(block.name)}</b><br>${block.active ? '<span class="err">Ativo</span>' : '<span class="muted">Inativo</span>'}</td>
+      <td>${block.dates.map(formatTariffDate).join(', ')}</td>
+      <td><div class="package-actions"><button type="button" class="ghostBtn" data-checkin-block-edit="${escapeTariffHtml(block.id)}">Editar</button><button type="button" class="ghostBtn" data-checkin-block-delete="${escapeTariffHtml(block.id)}">Excluir</button></div></td>
+    </tr>`).join('')
+  checkinBlockList.innerHTML = `<table><thead><tr><th>Nome</th><th>Check-ins bloqueados</th><th>Ações</th></tr></thead><tbody>${rows}</tbody></table>`
+}
+function readCheckinBlockEditor(){
+  return {
+    id:editingCheckinBlockId || createPackageId(),
+    name:checkinBlockName.value.trim(),
+    active:checkinBlockActive.value === '1',
+    dates:parseBlockedCheckins(checkinBlockDates.value)
+  }
+}
+function saveCheckinBlockEditor(){
+  const candidate = readCheckinBlockEditor()
+  const current = getCheckinBlocks()
+  const next = editingCheckinBlockId ? current.map(block=>block.id===editingCheckinBlockId ? candidate : block) : [...current,candidate]
+  const validation = validateCheckinBlocks(next)
+  if (!validation.valid){
+    checkinBlockEditorStatus.className = 'err'
+    checkinBlockEditorStatus.textContent = validation.errors.join(' | ')
+    return
+  }
+  saveCheckinBlocks(next)
+  markPackageConfigurationChanged()
+  renderCheckinBlocks()
+  renderDataStatus()
+  resetCheckinBlockEditor()
+  checkinBlockEditorStatus.className = 'ok'
+  checkinBlockEditorStatus.textContent = 'Bloqueio salvo independentemente das equivalências de preço.'
+}
+function editCheckinBlock(blockId){
+  const block = getCheckinBlocks().find(item=>item.id===blockId)
+  if (!block) return
+  editingCheckinBlockId = block.id
+  checkinBlockEditorTitle.textContent = `Editar bloqueio: ${block.name}`
+  checkinBlockName.value = block.name
+  checkinBlockActive.value = block.active ? '1' : '0'
+  checkinBlockDates.value = block.dates.join(', ')
+  checkinBlockCancelBtn.style.display = ''
+  checkinBlockEditorStatus.className = 'hint'
+  checkinBlockEditorStatus.textContent = 'Esta alteração não ativa, desativa ou exclui equivalências.'
+}
+function deleteCheckinBlock(blockId){
+  const block = getCheckinBlocks().find(item=>item.id===blockId)
+  if (!block || !confirm(`Excluir o bloqueio "${block.name}"?`)) return
+  saveCheckinBlocks(getCheckinBlocks().filter(item=>item.id!==blockId))
+  markPackageConfigurationChanged()
+  if (editingCheckinBlockId===blockId) resetCheckinBlockEditor()
+  renderCheckinBlocks()
+  renderDataStatus()
+  checkinBlockEditorStatus.className = 'ok'
+  checkinBlockEditorStatus.textContent = 'Bloqueio excluído; as equivalências de preço não foram alteradas.'
+}
+if (checkinBlockSaveBtn) checkinBlockSaveBtn.addEventListener('click', saveCheckinBlockEditor)
+if (checkinBlockCancelBtn) checkinBlockCancelBtn.addEventListener('click', resetCheckinBlockEditor)
+if (checkinBlockList) checkinBlockList.addEventListener('click', event=>{
+  const editId = event.target.getAttribute('data-checkin-block-edit')
+  const deleteId = event.target.getAttribute('data-checkin-block-delete')
+  if (editId) editCheckinBlock(editId)
+  if (deleteId) deleteCheckinBlock(deleteId)
+})
+renderCheckinBlocks()
 
 const msgTemplateEl = document.getElementById('msgTemplate')
 const btnSaveTemplate = document.getElementById('btnSaveTemplate')
@@ -852,6 +2070,593 @@ if (btnResetTemplate) btnResetTemplate.addEventListener('click', ()=>{
   alert('Texto padrão restaurado!')
 })
 
+
+/*********************
+ * Fluxo novo: análise temporária de arquivo bruto do Cloudbeds
+ *********************/
+const tariffUpdateState = {
+  file: null,
+  result: null,
+  validation: null,
+  inputs: null
+}
+
+const tariffRawFile = document.getElementById('tariffRawFile')
+const tariffDropZone = document.getElementById('tariffDropZone')
+const tariffSelectedFile = document.getElementById('tariffSelectedFile')
+const tariffRoomHint = document.getElementById('tariffRoomHint')
+const tariffVersion = document.getElementById('tariffVersion')
+const tariffUpdatedAt = document.getElementById('tariffUpdatedAt')
+const tariffAnalyzeBtn = document.getElementById('tariffAnalyzeBtn')
+const tariffApplyLocalBtn = document.getElementById('tariffApplyLocalBtn')
+const tariffResetBtn = document.getElementById('tariffResetBtn')
+const tariffAnalysisStatus = document.getElementById('tariffAnalysisStatus')
+const tariffSummary = document.getElementById('tariffSummary')
+const tariffPreviewTable = document.getElementById('tariffPreviewTable')
+const tariffValidationWarnings = document.getElementById('tariffValidationWarnings')
+const tariffTechnicalLog = document.getElementById('tariffTechnicalLog')
+const tariffGithubToken = document.getElementById('tariffGithubToken')
+const tariffGithubTokenToggle = document.getElementById('tariffGithubTokenToggle')
+const tariffRememberToken = document.getElementById('tariffRememberToken')
+const tariffForgetTokenBtn = document.getElementById('tariffForgetTokenBtn')
+const tariffPublishPreviewBtn = document.getElementById('tariffPublishPreviewBtn')
+const tariffPublishPreviewStatus = document.getElementById('tariffPublishPreviewStatus')
+const tariffPublishPreviewLog = document.getElementById('tariffPublishPreviewLog')
+const TARIFF_TOKEN_LS_KEY = 'vm_github_token_v1'
+const TARIFF_PREVIEW_TARGET = Object.freeze({ owner:'Leandrotron', repo:'Orcamentador', branch:'main', path:'dados.preview.json' })
+let tariffPreviewPublishing = false
+
+function formatFileSize(bytes){
+  if (!Number.isFinite(bytes) || bytes <= 0) return '—'
+  const units = ['B','KB','MB','GB']
+  let size = bytes
+  let unitIndex = 0
+  while (size >= 1024 && unitIndex < units.length - 1){ size /= 1024; unitIndex++ }
+  return `${size.toFixed(size >= 10 || unitIndex === 0 ? 0 : 1)} ${units[unitIndex]}`
+}
+function formatCurrency(value){
+  const numeric = Number(value)
+  return Number.isFinite(numeric) ? fmtBR(numeric) : '—'
+}
+function formatBool(value){ return value ? 'Sim' : 'Não' }
+function escapeTariffHtml(value){
+  return String(value == null ? '' : value).replace(/[&<>"']/g, (character) => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+  })[character])
+}
+function clearTariffAnalysisUi(){
+  if (tariffSummary) tariffSummary.innerHTML = '<div class="hint">Ainda não há análise para exibir.</div>'
+  if (tariffValidationWarnings) tariffValidationWarnings.innerHTML = ''
+  if (tariffTechnicalLog) tariffTechnicalLog.textContent = ''
+  if (tariffPreviewTable){
+    tariffPreviewTable.style.display = 'none'
+    tariffPreviewTable.innerHTML = ''
+  }
+}
+function resetTariffPublishUi(){
+  if (tariffPublishPreviewStatus) tariffPublishPreviewStatus.textContent = 'Analise um arquivo válido e informe o token para habilitar a publicação de teste.'
+  if (tariffPublishPreviewLog) tariffPublishPreviewLog.textContent = ''
+}
+function setTariffApplyEnabled(enabled){
+  if (tariffApplyLocalBtn) tariffApplyLocalBtn.disabled = !enabled
+  updateTariffPublishEnabled()
+}
+function updateTariffPublishEnabled(){
+  if (!tariffPublishPreviewBtn) return
+  const hasValidAnalysis = !!tariffUpdateState.result && !!tariffUpdateState.validation && tariffUpdateState.validation.valid && tariffAnalysisMatchesCurrentInputs()
+  const hasToken = !!(tariffGithubToken && tariffGithubToken.value.trim())
+  const hasPublisher = !!window.TariffPublisher && typeof window.TariffPublisher.publishPreview === 'function'
+  tariffPublishPreviewBtn.disabled = tariffPreviewPublishing || !hasValidAnalysis || !hasToken || !hasPublisher
+}
+function resetTariffAnalysisState(reason=''){
+  tariffUpdateState.file = null
+  tariffUpdateState.result = null
+  tariffUpdateState.validation = null
+  tariffUpdateState.inputs = null
+  setTariffApplyEnabled(false)
+  resetTariffPublishUi()
+  clearTariffAnalysisUi()
+  if (tariffSelectedFile){ tariffSelectedFile.textContent = 'Nenhum arquivo selecionado.' }
+  if (tariffAnalyzeBtn) tariffAnalyzeBtn.disabled = true
+  if (tariffAnalysisStatus){
+    if (reason){
+      tariffAnalysisStatus.innerHTML = `<span class="warn">${reason}</span>`
+    } else {
+      tariffAnalysisStatus.innerHTML = 'Esta etapa apenas analisa o arquivo. O tarifário ativo ainda não será alterado.'
+    }
+  }
+}
+function invalidateTariffAnalysis(reason){
+  tariffUpdateState.result = null
+  tariffUpdateState.validation = null
+  tariffUpdateState.inputs = null
+  setTariffApplyEnabled(false)
+  resetTariffPublishUi()
+  clearTariffAnalysisUi()
+  if (tariffAnalysisStatus) tariffAnalysisStatus.innerHTML = `<span class="warn">${reason}</span>`
+}
+function renderTariffAnalysisPreview(){
+  const { result, validation } = tariffUpdateState
+  if (!result || !validation) return
+
+  const dailyEntries = Object.keys(result.json.daily || {}).sort()
+  const firstDate = dailyEntries[0] || '—'
+  const lastDate = dailyEntries[dailyEntries.length - 1] || '—'
+  const validDates = dailyEntries.filter((date) => Number(result.json.daily[date].base || 0) > 0 || Number(result.json.daily[date].extra || 0) > 0)
+  const lastValidDate = validDates.length ? validDates[validDates.length - 1] : '—'
+  const blockedAfterCount = lastValidDate !== '—' ? dailyEntries.filter((date) => date > lastValidDate).length : dailyEntries.length
+  const ctaCount = dailyEntries.filter((date) => Number(result.json.daily[date].cta || 0) === 1).length
+  const ctdCount = dailyEntries.filter((date) => Number(result.json.daily[date].ctd || 0) === 1).length
+  const minStays = dailyEntries.map((date) => Number(result.json.daily[date].minStay || 0))
+  const baseValues = dailyEntries.map((date) => Number(result.json.daily[date].base || 0)).filter((value) => value > 0)
+  const extraValues = dailyEntries.map((date) => Number(result.json.daily[date].extra || 0)).filter((value) => value > 0)
+  const previewDates = dailyEntries.length <= 10 ? dailyEntries : [...dailyEntries.slice(0, 5), ...dailyEntries.slice(-5)]
+
+  if (tariffSummary){
+    tariffSummary.innerHTML = `
+      <div class="hint" style="margin-top:6px">Arquivo selecionado: <b>${escapeTariffHtml(tariffUpdateState.file ? tariffUpdateState.file.name : '—')}</b></div>
+      <div class="tariff-summary-grid">
+        <div class="tariff-summary-card"><strong>Versão</strong>${escapeTariffHtml(result.json.version || '—')}</div>
+        <div class="tariff-summary-card"><strong>UpdatedAt</strong>${escapeTariffHtml(result.json.updatedAt || '—')}</div>
+        <div class="tariff-summary-card"><strong>Quarto-base</strong>${escapeTariffHtml(tariffRoomHint ? tariffRoomHint.value || '—' : '—')}</div>
+        <div class="tariff-summary-card"><strong>Primeira data</strong>${firstDate}</div>
+        <div class="tariff-summary-card"><strong>Última data</strong>${lastDate}</div>
+        <div class="tariff-summary-card"><strong>Datas</strong>${dailyEntries.length}</div>
+        <div class="tariff-summary-card"><strong>Pacotes e quebra</strong>${Array.isArray(result.json.packageBreaks) ? result.json.packageBreaks.length : 0}</div>
+        <div class="tariff-summary-card"><strong>Equivalências</strong>${Array.isArray(result.json.stayEquivalences) ? result.json.stayEquivalences.length : 0}</div>
+        <div class="tariff-summary-card"><strong>Bloqueios de check-in</strong>${Array.isArray(result.json.checkinBlocks) ? result.json.checkinBlocks.length : 0}</div>
+        <div class="tariff-summary-card"><strong>Último preço válido</strong>${lastValidDate}</div>
+        <div class="tariff-summary-card"><strong>Datas bloqueadas após</strong>${blockedAfterCount}</div>
+        <div class="tariff-summary-card"><strong>CTA</strong>${ctaCount}</div>
+        <div class="tariff-summary-card"><strong>CTD</strong>${ctdCount}</div>
+        <div class="tariff-summary-card"><strong>Maior minStay</strong>${Math.max(...minStays, 0)}</div>
+        <div class="tariff-summary-card"><strong>Base positiva</strong>${baseValues.length ? `${formatCurrency(Math.min(...baseValues))} • ${formatCurrency(Math.max(...baseValues))}` : '—'}</div>
+        <div class="tariff-summary-card"><strong>Extra positiva</strong>${extraValues.length ? `${formatCurrency(Math.min(...extraValues))} • ${formatCurrency(Math.max(...extraValues))}` : '—'}</div>
+      </div>
+    `
+  }
+
+  const tableRows = previewDates.map((date) => {
+    const row = result.json.daily[date] || {}
+    return `<tr><td>${date}</td><td>${formatCurrency(row.base || 0)}</td><td>${formatCurrency(row.extra || 0)}</td><td>${row.minStay || 0}</td><td>${formatBool(Number(row.cta || 0) === 1)}</td><td>${formatBool(Number(row.ctd || 0) === 1)}</td></tr>`
+  }).join('')
+
+  if (tariffPreviewTable){
+    tariffPreviewTable.innerHTML = `
+      <thead><tr><th>Data</th><th>Tarifa base</th><th>Adulto extra</th><th>Estadia mínima</th><th>CTA</th><th>CTD</th></tr></thead>
+      <tbody>${tableRows}</tbody>
+    `
+    tariffPreviewTable.style.display = 'table'
+  }
+
+  if (tariffValidationWarnings){
+    if (validation.warnings && validation.warnings.length){
+      tariffValidationWarnings.innerHTML = `<div class="warn">Warnings da validação:</div><ul>${validation.warnings.map((warning) => `<li>${escapeTariffHtml(warning)}</li>`).join('')}</ul>`
+    } else {
+      tariffValidationWarnings.innerHTML = '<div class="ok">Validação concluída sem warnings.</div>'
+    }
+  }
+
+  if (tariffTechnicalLog) tariffTechnicalLog.textContent = result.log || ''
+  if (tariffAnalysisStatus) tariffAnalysisStatus.innerHTML = '<span class="ok">Análise concluída. Os dados foram apenas validados e pré-visualizados.</span>'
+}
+function updateTariffFileSelection(file){
+  tariffUpdateState.file = file || null
+  tariffUpdateState.result = null
+  tariffUpdateState.validation = null
+  tariffUpdateState.inputs = null
+  setTariffApplyEnabled(false)
+  resetTariffPublishUi()
+  clearTariffAnalysisUi()
+  if (!file){
+    if (tariffSelectedFile) tariffSelectedFile.textContent = 'Nenhum arquivo selecionado.'
+    if (tariffAnalysisStatus) tariffAnalysisStatus.innerHTML = 'Nenhum arquivo selecionado. Escolha um .xlsx ou .csv para analisar.'
+    if (tariffAnalyzeBtn) tariffAnalyzeBtn.disabled = true
+    return
+  }
+  const ext = (file.name.split('.').pop() || '').toLowerCase()
+  if (!['xlsx','csv'].includes(ext)){
+    if (tariffSelectedFile) tariffSelectedFile.textContent = `Arquivo inválido: ${file.name}`
+    if (tariffAnalysisStatus) tariffAnalysisStatus.innerHTML = '<span class="err">Extensão não suportada. Use .xlsx ou .csv.</span>'
+    if (tariffAnalyzeBtn) tariffAnalyzeBtn.disabled = true
+    return
+  }
+  if (tariffSelectedFile) tariffSelectedFile.textContent = `${file.name} • ${formatFileSize(file.size)} • ${file.type || 'arquivo'}`
+  if (tariffAnalysisStatus) tariffAnalysisStatus.innerHTML = 'Arquivo selecionado. Revise os metadados e clique em “Analisar arquivo”.'
+  if (tariffAnalyzeBtn) tariffAnalyzeBtn.disabled = false
+}
+async function analyzeTariffCloudbedsFile(){
+  const file = tariffUpdateState.file || (tariffRawFile && tariffRawFile.files && tariffRawFile.files[0])
+  tariffUpdateState.result = null
+  tariffUpdateState.validation = null
+  tariffUpdateState.inputs = null
+  setTariffApplyEnabled(false)
+  resetTariffPublishUi()
+  clearTariffAnalysisUi()
+  if (!file){
+    if (tariffAnalysisStatus) tariffAnalysisStatus.innerHTML = '<span class="err">Selecione um arquivo antes de analisar.</span>'
+    return
+  }
+
+  const roomHint = (tariffRoomHint && tariffRoomHint.value || '').trim()
+  const version = (tariffVersion && tariffVersion.value || '').trim()
+  const updatedAt = (tariffUpdatedAt && tariffUpdatedAt.value || '').trim()
+  const messageTemplate = loadMsgTemplate()
+
+  if (!roomHint){
+    if (tariffAnalysisStatus) tariffAnalysisStatus.innerHTML = '<span class="err">Informe o quarto-base antes de analisar.</span>'
+    return
+  }
+  if (!/^\d{4}-\d{2}-\d{2}-\d+$/.test(version)){
+    if (tariffAnalysisStatus) tariffAnalysisStatus.innerHTML = '<span class="err">Versão inválida. Use o formato YYYY-MM-DD-N.</span>'
+    return
+  }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(updatedAt)){
+    if (tariffAnalysisStatus) tariffAnalysisStatus.innerHTML = '<span class="err">Data da atualização inválida. Use o formato YYYY-MM-DD.</span>'
+    return
+  }
+  if (!messageTemplate){
+    if (tariffAnalysisStatus) tariffAnalysisStatus.innerHTML = '<span class="err">O template de mensagem atual está vazio.</span>'
+    return
+  }
+
+  if (tariffAnalyzeBtn) tariffAnalyzeBtn.disabled = true
+  if (tariffAnalysisStatus) tariffAnalysisStatus.innerHTML = '<span class="warn">Analisando...</span>'
+  clearTariffAnalysisUi()
+
+  try{
+    if (!window.TariffConverter || typeof window.TariffConverter.readFile !== 'function'){
+      throw new Error('O módulo TariffConverter não está disponível.')
+    }
+
+    let grid
+    const extension = (file.name.split('.').pop() || '').toLowerCase()
+    if (extension === 'csv' && typeof file.arrayBuffer === 'function'){
+      const buffer = await file.arrayBuffer()
+      let text = new TextDecoder('utf-8').decode(buffer)
+      if (text.includes('\uFFFD')) text = new TextDecoder('windows-1252').decode(buffer)
+      grid = window.TariffConverter.parseCSVToGrid(text)
+    } else {
+      grid = await window.TariffConverter.readFile(file)
+    }
+    const convertedResult = window.TariffConverter.convertGrid({ grid, roomHint, version, updatedAt, messageTemplate })
+    const result = {...convertedResult, json:payloadWithQuoteSettings(convertedResult.json)}
+    const validation = validateTariffPayload(result.json)
+    if (!validation.valid && validation.errors && validation.errors.length){
+      throw new Error(validation.errors.join(' | '))
+    }
+
+    tariffUpdateState.file = file
+    tariffUpdateState.result = result
+    tariffUpdateState.validation = validation
+    tariffUpdateState.inputs = {
+      file,
+      roomHint,
+      version,
+      updatedAt,
+      packageBreaks:JSON.stringify(getPackageBreaks()),
+      stayEquivalences:JSON.stringify(getStayEquivalences()),
+      checkinBlocks:JSON.stringify(getCheckinBlocks())
+    }
+    setTariffApplyEnabled(true)
+    renderTariffAnalysisPreview()
+  }catch (err){
+    tariffUpdateState.result = null
+    tariffUpdateState.validation = null
+    tariffUpdateState.inputs = null
+    setTariffApplyEnabled(false)
+    tariffUpdateState.file = file
+    clearTariffAnalysisUi()
+    const friendlyMessage = err && err.message ? err.message : 'Erro inesperado ao analisar o arquivo.'
+    if (tariffAnalysisStatus) tariffAnalysisStatus.innerHTML = `<span class="err">${escapeTariffHtml(friendlyMessage)}</span>`
+    if (tariffTechnicalLog) tariffTechnicalLog.textContent = friendlyMessage
+    console.error('[tariff-analysis]', friendlyMessage)
+  } finally {
+    if (tariffAnalyzeBtn) tariffAnalyzeBtn.disabled = false
+  }
+}
+function formatTariffDate(date){
+  const parts = String(date || '').split('-')
+  return parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : '—'
+}
+function tariffAnalysisMatchesCurrentInputs(){
+  const inputs = tariffUpdateState.inputs
+  return !!inputs && inputs.file === tariffUpdateState.file &&
+    inputs.roomHint === (tariffRoomHint && tariffRoomHint.value || '').trim() &&
+    inputs.version === (tariffVersion && tariffVersion.value || '').trim() &&
+    inputs.updatedAt === (tariffUpdatedAt && tariffUpdatedAt.value || '').trim() &&
+    inputs.packageBreaks === JSON.stringify(getPackageBreaks()) &&
+    inputs.stayEquivalences === JSON.stringify(getStayEquivalences()) &&
+    inputs.checkinBlocks === JSON.stringify(getCheckinBlocks())
+}
+function applyAnalyzedTariffLocally(){
+  const result = tariffUpdateState.result
+  if (!result || !tariffUpdateState.validation){
+    setTariffApplyEnabled(false)
+    if (tariffAnalysisStatus) tariffAnalysisStatus.innerHTML = '<span class="err">Não há resultado analisado e válido para aplicar.</span>'
+    return
+  }
+  if (!tariffAnalysisMatchesCurrentInputs()){
+    invalidateTariffAnalysis('Os campos não correspondem mais à análise. Analise o arquivo novamente antes de aplicar.')
+    return
+  }
+
+  const validation = validateTariffPayload(result.json)
+  tariffUpdateState.validation = validation
+  if (!validation.valid){
+    setTariffApplyEnabled(false)
+    const message = validation.errors && validation.errors.length ? validation.errors.join(' | ') : 'Payload inválido.'
+    if (tariffAnalysisStatus) tariffAnalysisStatus.innerHTML = `<span class="err">Não foi possível aplicar: ${escapeTariffHtml(message)}</span>`
+    console.error('[tariff-local-apply]', message)
+    return
+  }
+
+  const dates = Object.keys(result.json.daily || {}).sort()
+  const validDates = dates.filter((date) => Number(result.json.daily[date].base || 0) > 0 || Number(result.json.daily[date].extra || 0) > 0)
+  const lastValidDate = validDates.length ? validDates[validDates.length - 1] : '—'
+  const blockedCount = lastValidDate === '—' ? dates.length : dates.filter((date) => date > lastValidDate).length
+  const packageBreakCount = Array.isArray(result.json.packageBreaks) ? result.json.packageBreaks.length : 0
+  const stayEquivalenceCount = Array.isArray(result.json.stayEquivalences) ? result.json.stayEquivalences.length : 0
+  const checkinBlockCount = Array.isArray(result.json.checkinBlocks) ? result.json.checkinBlocks.length : 0
+  const confirmed = confirm(
+    `Aplicar este tarifário somente neste navegador?\n\n` +
+    `Versão: ${result.json.version || '—'}\n` +
+    `UpdatedAt: ${formatTariffDate(result.json.updatedAt)}\n` +
+    `Período: ${formatTariffDate(dates[0])} a ${formatTariffDate(dates[dates.length - 1])}\n` +
+    `Datas: ${dates.length}\n` +
+    `Pacotes e quebra: ${packageBreakCount}\n` +
+    `Equivalências: ${stayEquivalenceCount}\n` +
+    `Bloqueios de check-in: ${checkinBlockCount}\n` +
+    `Último preço válido: ${formatTariffDate(lastValidDate)}\n` +
+    `Datas bloqueadas: ${blockedCount}\n\n` +
+    `O GitHub e os outros usuários não serão alterados.`
+  )
+  if (!confirmed) return
+
+  const previousDaily = DAILY
+  const previousSource = ACTIVE_DATA_SOURCE
+  const previousDailyCache = localStorage.getItem(LSKEY)
+  const previousMeta = localStorage.getItem(DATA_META_KEY)
+  const previousPackageBreaksCache = localStorage.getItem(PACKAGE_BREAKS_KEY)
+  const previousPackageBreaks = getPackageBreaks()
+  const previousStayEquivalencesCache = localStorage.getItem(STAY_EQUIVALENCES_KEY)
+  const previousStayEquivalences = getStayEquivalences()
+  const previousCheckinBlocksCache = localStorage.getItem(CHECKIN_BLOCKS_KEY)
+  const previousCheckinBlocks = getCheckinBlocks()
+  try{
+    applyRemotePayload(result.json, 'Arquivo Cloudbeds — local')
+    INITIAL_SYNC_PENDING = false
+    renderDataStatus()
+    if (tariffAnalysisStatus){
+      tariffAnalysisStatus.innerHTML = `<span class="ok">Tarifário aplicado somente neste navegador. Versão ${escapeTariffHtml(result.json.version || '—')} · ${dates.length} datas.</span><br><span class="hint">Para restaurar o tarifário oficial, use “Atualizar dados agora” na aba Sincronização.</span>`
+    }
+  }catch (err){
+    setActiveDaily(previousDaily, previousSource)
+    try{
+      if (previousDailyCache == null) localStorage.removeItem(LSKEY); else localStorage.setItem(LSKEY, previousDailyCache)
+      if (previousMeta == null) localStorage.removeItem(DATA_META_KEY); else localStorage.setItem(DATA_META_KEY, previousMeta)
+      PACKAGE_BREAKS = previousPackageBreaks
+      if (previousPackageBreaksCache == null) localStorage.removeItem(PACKAGE_BREAKS_KEY); else localStorage.setItem(PACKAGE_BREAKS_KEY, previousPackageBreaksCache)
+      STAY_EQUIVALENCES = previousStayEquivalences
+      if (previousStayEquivalencesCache == null) localStorage.removeItem(STAY_EQUIVALENCES_KEY); else localStorage.setItem(STAY_EQUIVALENCES_KEY, previousStayEquivalencesCache)
+      CHECKIN_BLOCKS = previousCheckinBlocks
+      if (previousCheckinBlocksCache == null) localStorage.removeItem(CHECKIN_BLOCKS_KEY); else localStorage.setItem(CHECKIN_BLOCKS_KEY, previousCheckinBlocksCache)
+      renderPackageBreaks()
+      renderStayEquivalences()
+      renderCheckinBlocks()
+    }catch (restoreErr){ console.error('[tariff-local-apply-restore]', restoreErr && restoreErr.message ? restoreErr.message : 'Falha ao restaurar armazenamento.') }
+    renderDataStatus()
+    const message = err && err.message ? err.message : 'Erro inesperado ao aplicar o tarifário local.'
+    if (tariffAnalysisStatus) tariffAnalysisStatus.innerHTML = `<span class="err">Não foi possível aplicar o tarifário neste navegador: ${escapeTariffHtml(message)}</span>`
+    console.error('[tariff-local-apply]', message)
+  }
+}
+async function publishAnalyzedTariffPreview(){
+  if (tariffPreviewPublishing) return
+  const result = tariffUpdateState.result
+  const token = tariffGithubToken ? tariffGithubToken.value.trim() : ''
+  if (!result || !tariffUpdateState.validation || !tariffAnalysisMatchesCurrentInputs()){
+    if (tariffPublishPreviewStatus) tariffPublishPreviewStatus.textContent = 'A análise não está mais válida. Analise o arquivo novamente antes de publicar.'
+    updateTariffPublishEnabled()
+    return
+  }
+  const validation = validateTariffPayload(result.json)
+  tariffUpdateState.validation = validation
+  if (!validation.valid){
+    if (tariffPublishPreviewStatus) tariffPublishPreviewStatus.textContent = 'O payload não passou na revalidação e não foi publicado.'
+    if (tariffPublishPreviewLog) tariffPublishPreviewLog.textContent = validation.errors.join('\n')
+    updateTariffPublishEnabled()
+    return
+  }
+  if (!token){
+    if (tariffPublishPreviewStatus) tariffPublishPreviewStatus.textContent = 'Informe um token do GitHub antes de publicar.'
+    updateTariffPublishEnabled()
+    return
+  }
+  if (!window.TariffPublisher || typeof window.TariffPublisher.publishPreview !== 'function'){
+    if (tariffPublishPreviewStatus) tariffPublishPreviewStatus.textContent = 'O módulo de publicação de teste não está disponível.'
+    updateTariffPublishEnabled()
+    return
+  }
+
+  const dates = Object.keys(result.json.daily || {}).sort()
+  const validDates = dates.filter((date) => Number(result.json.daily[date].base || 0) > 0 || Number(result.json.daily[date].extra || 0) > 0)
+  const lastValidDate = validDates.length ? validDates[validDates.length - 1] : '—'
+  const blockedCount = lastValidDate === '—' ? dates.length : dates.filter((date) => date > lastValidDate).length
+  const packageBreakCount = Array.isArray(result.json.packageBreaks) ? result.json.packageBreaks.length : 0
+  const stayEquivalenceCount = Array.isArray(result.json.stayEquivalences) ? result.json.stayEquivalences.length : 0
+  const checkinBlockCount = Array.isArray(result.json.checkinBlocks) ? result.json.checkinBlocks.length : 0
+  const confirmed = confirm(
+    `Publicar arquivo de teste?\n\n` +
+    `Repositório: ${TARIFF_PREVIEW_TARGET.owner}/${TARIFF_PREVIEW_TARGET.repo}\n` +
+    `Branch: ${TARIFF_PREVIEW_TARGET.branch}\n` +
+    `Arquivo: ${TARIFF_PREVIEW_TARGET.path}\n` +
+    `Versão: ${result.json.version || '—'}\n` +
+    `UpdatedAt: ${formatTariffDate(result.json.updatedAt)}\n` +
+    `Período: ${formatTariffDate(dates[0])} a ${formatTariffDate(dates[dates.length - 1])}\n` +
+    `Datas: ${dates.length}\n` +
+    `Pacotes e quebra: ${packageBreakCount}\n` +
+    `Equivalências: ${stayEquivalenceCount}\n` +
+    `Bloqueios de check-in: ${checkinBlockCount}\n` +
+    `Último preço válido: ${formatTariffDate(lastValidDate)}\n` +
+    `Datas bloqueadas: ${blockedCount}\n\n` +
+    `O arquivo oficial dados.json não será alterado.`
+  )
+  if (!confirmed) return
+
+  tariffPreviewPublishing = true
+  updateTariffPublishEnabled()
+  if (tariffPublishPreviewStatus) tariffPublishPreviewStatus.textContent = 'Publicando arquivo de teste...'
+  if (tariffPublishPreviewLog) tariffPublishPreviewLog.textContent = ''
+  try{
+    const publishResult = await window.TariffPublisher.publishPreview({
+      token,
+      owner:TARIFF_PREVIEW_TARGET.owner,
+      repo:TARIFF_PREVIEW_TARGET.repo,
+      branch:TARIFF_PREVIEW_TARGET.branch,
+      path:TARIFF_PREVIEW_TARGET.path,
+      payload:result.json,
+      commitMessage:`Atualiza prévia do tarifário ${result.json.version || 'sem-versao'}`
+    })
+    const shortCommit = publishResult.commitSha ? publishResult.commitSha.slice(0, 7) : '—'
+    const confirmedAt = new Date().toLocaleString('pt-BR')
+    if (tariffPublishPreviewStatus){
+      tariffPublishPreviewStatus.textContent = publishResult.branchConfirmed ?
+        'Arquivo de teste publicado e verificado. Branch main confirmado. O tarifário oficial permanece intacto.' :
+        `Arquivo publicado e verificado no commit ${shortCommit}. A leitura do branch main ainda está sendo atualizada pelo GitHub. O tarifário oficial permanece intacto.`
+    }
+    if (tariffPublishPreviewLog){
+      tariffPublishPreviewLog.textContent =
+        `Versão: ${result.json.version || '—'}\n` +
+        `Arquivo: ${publishResult.path}\n` +
+        `Branch: ${publishResult.branch}\n` +
+        `Commit: ${shortCommit}\n` +
+        `Verificado no commit: sim\n` +
+        `Branch main confirmado: ${publishResult.branchConfirmed ? 'sim' : 'propagação pendente'}\n` +
+        `Datas: ${dates.length}\n` +
+        `Pacotes e quebra: ${packageBreakCount}\n` +
+        `Equivalências: ${stayEquivalenceCount}\n` +
+        `Bloqueios de check-in: ${checkinBlockCount}\n` +
+        `Confirmado em: ${confirmedAt}\n` +
+        `Commit URL: ${publishResult.commitUrl || '—'}\n` +
+        `dados.json não foi alterado.`
+    }
+  }catch (err){
+    const message = err && err.message ? err.message : 'Erro inesperado na publicação de teste.'
+    const commitNote = err && err.commitSha ? ` Commit: ${String(err.commitSha).slice(0, 7)}.` : ''
+    if (tariffPublishPreviewStatus){
+      tariffPublishPreviewStatus.textContent = err && /^VERIFY_/.test(err.code || '') ?
+        `O arquivo foi publicado, mas a confirmação do conteúdo falhou.${commitNote}` : message
+    }
+    if (tariffPublishPreviewLog) tariffPublishPreviewLog.textContent = `${message}${commitNote}`
+    console.error('[tariff-preview-publish]', message)
+  } finally {
+    tariffPreviewPublishing = false
+    updateTariffPublishEnabled()
+  }
+}
+function setTariffInputDefaults(){
+  const now = new Date()
+  const localVersion = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}-01`
+  const localUpdatedAt = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`
+  if (tariffVersion && !tariffVersion.value) tariffVersion.value = localVersion
+  if (tariffUpdatedAt && !tariffUpdatedAt.value) tariffUpdatedAt.value = localUpdatedAt
+}
+function attachTariffAnalysisEvents(){
+  if (tariffGithubToken){
+    const rememberedToken = localStorage.getItem(TARIFF_TOKEN_LS_KEY) || ''
+    tariffGithubToken.value = rememberedToken
+    if (tariffRememberToken) tariffRememberToken.checked = !!rememberedToken
+    tariffGithubToken.addEventListener('input', () => {
+      if (tariffRememberToken && tariffRememberToken.checked){
+        const token = tariffGithubToken.value.trim()
+        if (token) localStorage.setItem(TARIFF_TOKEN_LS_KEY, token); else localStorage.removeItem(TARIFF_TOKEN_LS_KEY)
+      }
+      updateTariffPublishEnabled()
+    })
+  }
+  if (tariffGithubTokenToggle){
+    tariffGithubTokenToggle.addEventListener('click', () => {
+      const show = tariffGithubToken.type === 'password'
+      tariffGithubToken.type = show ? 'text' : 'password'
+      tariffGithubTokenToggle.textContent = show ? 'Ocultar token' : 'Mostrar token'
+    })
+  }
+  if (tariffRememberToken){
+    tariffRememberToken.addEventListener('change', () => {
+      const token = tariffGithubToken ? tariffGithubToken.value.trim() : ''
+      if (tariffRememberToken.checked && token) localStorage.setItem(TARIFF_TOKEN_LS_KEY, token)
+      else localStorage.removeItem(TARIFF_TOKEN_LS_KEY)
+    })
+  }
+  if (tariffForgetTokenBtn){
+    tariffForgetTokenBtn.addEventListener('click', () => {
+      if (tariffGithubToken){ tariffGithubToken.value = ''; tariffGithubToken.type = 'password' }
+      if (tariffGithubTokenToggle) tariffGithubTokenToggle.textContent = 'Mostrar token'
+      if (tariffRememberToken) tariffRememberToken.checked = false
+      localStorage.removeItem(TARIFF_TOKEN_LS_KEY)
+      if (tariffPublishPreviewStatus) tariffPublishPreviewStatus.textContent = 'Token removido deste navegador.'
+      updateTariffPublishEnabled()
+    })
+  }
+  if (tariffPublishPreviewBtn){ tariffPublishPreviewBtn.addEventListener('click', publishAnalyzedTariffPreview) }
+  if (tariffRawFile){
+    tariffRawFile.addEventListener('change', (event) => {
+      const file = event.target.files && event.target.files[0]
+      updateTariffFileSelection(file)
+    })
+  }
+  if (tariffDropZone){
+    tariffDropZone.addEventListener('click', () => tariffRawFile && tariffRawFile.click())
+    tariffDropZone.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' '){
+        event.preventDefault()
+        tariffRawFile && tariffRawFile.click()
+      }
+    })
+    tariffDropZone.addEventListener('dragenter', (event) => { event.preventDefault(); tariffDropZone.classList.add('active') })
+    tariffDropZone.addEventListener('dragover', (event) => { event.preventDefault(); tariffDropZone.classList.add('active') })
+    tariffDropZone.addEventListener('dragleave', () => tariffDropZone.classList.remove('active'))
+    tariffDropZone.addEventListener('drop', (event) => {
+      event.preventDefault()
+      tariffDropZone.classList.remove('active')
+      const file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0]
+      if (file){
+        const dataTransfer = new DataTransfer()
+        dataTransfer.items.add(file)
+        if (tariffRawFile){ tariffRawFile.files = dataTransfer.files }
+        updateTariffFileSelection(file)
+      }
+    })
+  }
+  if (tariffAnalyzeBtn){ tariffAnalyzeBtn.addEventListener('click', analyzeTariffCloudbedsFile) }
+  if (tariffApplyLocalBtn){ tariffApplyLocalBtn.addEventListener('click', applyAnalyzedTariffLocally) }
+  if (tariffResetBtn){
+    tariffResetBtn.addEventListener('click', () => {
+      if (tariffRawFile){ tariffRawFile.value = '' }
+      updateTariffFileSelection(null)
+      if (tariffRoomHint){ tariffRoomHint.value = 'Suíte com Varanda' }
+      setTariffInputDefaults()
+      tariffUpdateState.file = null
+      tariffUpdateState.result = null
+      tariffUpdateState.validation = null
+      tariffUpdateState.inputs = null
+      setTariffApplyEnabled(false)
+    })
+  }
+  const invalidateOnChange = () => {
+    if (tariffUpdateState.result){
+      invalidateTariffAnalysis('Os metadados foram alterados. A análise anterior foi descartada.')
+    }
+  }
+  if (tariffRoomHint){ tariffRoomHint.addEventListener('input', invalidateOnChange) }
+  if (tariffVersion){ tariffVersion.addEventListener('input', invalidateOnChange) }
+  if (tariffUpdatedAt){ tariffUpdatedAt.addEventListener('input', invalidateOnChange) }
+}
+
+setTariffInputDefaults()
+attachTariffAnalysisEvents()
+resetTariffAnalysisState()
 
 /*********************
  * Importar CSV
@@ -880,8 +2685,17 @@ document.getElementById('csvParse').addEventListener('click', async ()=>{
 
 document.getElementById('csvApply').addEventListener('click', ()=>{
   if (!PARSED){ csvPreview.innerHTML = '<span class="warn">Faça a pré‑visualização antes de aplicar.</span>'; return }
-  DAILY = Object.assign({}, DAILY, PARSED)
+  setActiveDaily(Object.assign({}, DAILY, PARSED), DATA_SOURCE_MANUAL_CSV)
   saveDaily(DAILY)
+  saveDataMeta({
+    source: 'CSV manual',
+    version: '-',
+    updatedAt: '-',
+    loadedAt: new Date().toISOString(),
+    dailyCount: countDailyEntries(DAILY),
+    templateLoaded: false
+  })
+  renderDataStatus()
   csvPreview.innerHTML = '<span class="ok">Tarifário aplicado e salvo.</span>'
 })
 
@@ -890,7 +2704,7 @@ document.getElementById('csvApply').addEventListener('click', ()=>{
  *********************/
 const btnExport = document.getElementById('btnExport')
 btnExport.addEventListener('click', ()=>{
-  const blob = new Blob([JSON.stringify({daily: DAILY, messageTemplate: loadMsgTemplate()},null,2)], {type:'application/json'})
+  const blob = new Blob([JSON.stringify({daily: DAILY, messageTemplate: loadMsgTemplate(), packageBreaks:getPackageBreaks(), stayEquivalences:getStayEquivalences(), checkinBlocks:getCheckinBlocks()},null,2)], {type:'application/json'})
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a'); a.href=url; a.download='tarifario-vivamar.json'; a.click(); URL.revokeObjectURL(url)
 })
@@ -903,17 +2717,42 @@ btnImport.addEventListener('click', async ()=>{
     const text = await f.text()
     const data = JSON.parse(text)
     if (typeof data!== 'object' || data===null) throw new Error('JSON inválido')
-    if (data.daily || data.messageTemplate){
-      DAILY = data.daily || {}
+    const validation = validateTariffPayload(data)
+    logTariffValidation(validation, 'JSON manual')
+    if (!validation.valid) throw new Error(`JSON inválido para importação. ${validation.errors.join(' | ')}`)
+    if (data.daily || data.messageTemplate || Object.prototype.hasOwnProperty.call(data, 'packageBreaks') || Object.prototype.hasOwnProperty.call(data, 'stayEquivalences') || Object.prototype.hasOwnProperty.call(data, 'checkinBlocks')){
+      if (data.daily && typeof data.daily === 'object') setActiveDaily(data.daily, DATA_SOURCE_MANUAL_JSON)
       saveDaily(DAILY)
       if (typeof data.messageTemplate === 'string'){
         saveMsgTemplate(data.messageTemplate)
         if (msgTemplateEl) msgTemplateEl.value = data.messageTemplate
       }
+      if (Object.prototype.hasOwnProperty.call(data, 'packageBreaks')){
+        savePackageBreaks(data.packageBreaks)
+        renderPackageBreaks()
+      }
+      if (Object.prototype.hasOwnProperty.call(data, 'stayEquivalences')){
+        saveStayEquivalences(data.stayEquivalences)
+        migrateLegacyCheckinBlocks(data.stayEquivalences)
+        renderStayEquivalences()
+        renderCheckinBlocks()
+      }
+      if (Object.prototype.hasOwnProperty.call(data, 'checkinBlocks')){
+        saveCheckinBlocks(data.checkinBlocks)
+        renderCheckinBlocks()
+      }
     } else {
-      DAILY = data
+      setActiveDaily(data, DATA_SOURCE_MANUAL_JSON)
       saveDaily(DAILY)
     }
+    saveDataMeta({
+      source: 'JSON manual',
+      version: data.version || '-',
+      updatedAt: data.updatedAt || '-',
+      loadedAt: new Date().toISOString(),
+      dailyCount: countDailyEntries(DAILY),
+      templateLoaded: typeof data.messageTemplate === 'string'
+    })
     renderDataStatus(); alert('JSON importado com sucesso!')
   }catch(e){ alert('Erro ao importar JSON: '+e.message) }
 })
@@ -929,7 +2768,7 @@ function runTests(){
   try{
     const s = '2025-08-09';
     add(ymd(s)==='2025-08-09', 'ymd(string) mantém a data');
-    add(ymd(new Date('2025-08-09'))==='2025-08-09', 'ymd(Date) não sofre com fuso');
+    add(ymd(new Date(2025,7,9))==='2025-08-09', 'ymd(Date local) mantém a data');
     const nights = [...noitesIter('2025-08-09','2025-08-12')].map(ymd);
     add(nights.length===3 && nights[0]==='2025-08-09' && nights[2]==='2025-08-11', 'noitesIter 3 noites (09,10,11)');
 
@@ -938,10 +2777,150 @@ function runTests(){
     add(typeof t.valor==='number', 'tarifaFallback retorna valor numérico');
 
     // Parser de CSV — smoke test
-    const fake = 'x;09/08/2025;10/08/2025\nTarifário base;300;320\nPreço para o adulto 3;90;90\nEstadia mínima;2;2\nFechado para Chegada;0;1\nFechado para Partida;0;0\n'
+    const fake = 'x;09/08/2025;10/08/2025;11/08/2025\nTarifário base;300;320;340\nPreço para o adulto 3;90;90;90\nEstadia mínima;2;2;2\nFechado para Chegada;0;1;0\nFechado para Partida;0;0;0\n'
     const parsed = parseCSVText(fake)
     add(parsed['2025-08-09'].base===300 && parsed['2025-08-10'].extra===90, 'parseCSVText lê base/extra')
     add(parsed['2025-08-10'].cta===true && parsed['2025-08-10'].ctd===false, 'parseCSVText lê CTA/CTD')
+
+    // Validador JSON
+    const validPayload = {
+      version:'2026-04-27-01',
+      updatedAt:'2026-04-27',
+      messageTemplate:'ok',
+      daily:{
+        '2026-04-27': {base:320, extra:90, minStay:0, cta:0, ctd:0},
+        '2026-04-28': {base:320, extra:90, minStay:1, cta:true, ctd:false}
+      }
+    }
+    const validResult = validateTariffPayload(validPayload)
+    add(validResult.valid===true && validResult.errors.length===0, 'validateTariffPayload aceita payload válido')
+
+    const invalidResult = validateTariffPayload({daily:{'27-04-2026':{base:-1, extra:90, minStay:0, cta:2, ctd:0}}})
+    add(invalidResult.valid===false && invalidResult.errors.length>=1, 'validateTariffPayload rejeita payload inválido')
+
+    // Pacotes e quebra — dados fictícios isolados
+    const percentPackage = {id:'teste-percent', name:'Pacote percentual fictício', from:'2026-09-04', to:'2026-09-07', allowBreak:true, minNights:2, surchargeType:'percent', surchargeValue:10}
+    const fixedPackage = {id:'teste-fixed', name:'Pacote fixo fictício', from:'2026-09-10', to:'2026-09-13', allowBreak:true, minNights:1, surchargeType:'fixed', surchargeValue:25}
+    const adjacentPackage = {id:'teste-adjacent', name:'Pacote adjacente fictício', from:'2026-09-07', to:'2026-09-10', allowBreak:false, minNights:1, surchargeType:'fixed', surchargeValue:0}
+    const overlappingPackage = {...adjacentPackage, id:'teste-overlap', name:'Pacote sobreposto fictício', from:'2026-09-06'}
+    add(validatePackageBreaks([percentPackage, adjacentPackage, fixedPackage]).valid===true, 'pacotes adjacentes são aceitos')
+    add(validatePackageBreaks([percentPackage, overlappingPackage]).valid===false, 'pacotes com noites sobrepostas são rejeitados')
+    add(validatePackageBreaks([{...percentPackage, minNights:3}]).valid===false, 'mínimo incompatível com a duração é rejeitado')
+
+    const percentPartialLines = [
+      {data:'2026-09-04', base:100, extraVlr:90},
+      {data:'2026-09-05', base:200, extraVlr:90}
+    ]
+    const percentBreak = evaluatePackageBreaks(percentPartialLines, [percentPackage])
+    add(percentBreak.totalAdjustment===30 && percentBreak.usages[0].adjustedNights===2, 'quebra percentual ajusta somente bases das noites internas')
+    const fixedBreak = evaluatePackageBreaks([{data:'2026-09-10', base:100, extraVlr:90}], [fixedPackage])
+    add(fixedBreak.totalAdjustment===25, 'quebra em reais aplica valor por diária, não por reserva')
+    const externalDoesNotComplete = evaluatePackageBreaks([{data:'2026-09-03', base:100, extraVlr:90},{data:'2026-09-04', base:100, extraVlr:90}], [percentPackage])
+    add(externalDoesNotComplete.totalAdjustment===0 && externalDoesNotComplete.usages[0].usedNights===1, 'noites externas não satisfazem o mínimo da quebra')
+    const breakDisabled = evaluatePackageBreaks(percentPartialLines, [{...percentPackage, allowBreak:false}])
+    add(breakDisabled.totalAdjustment===0, 'quebra desligada preserva tarifas')
+    const completeWithExternal = evaluatePackageBreaks([
+      {data:'2026-09-03', base:80, extraVlr:90},
+      {data:'2026-09-04', base:100, extraVlr:90},
+      {data:'2026-09-05', base:100, extraVlr:90},
+      {data:'2026-09-06', base:100, extraVlr:90},
+      {data:'2026-09-07', base:80, extraVlr:90}
+    ], [percentPackage])
+    add(completeWithExternal.usages[0].complete===true && completeWithExternal.totalAdjustment===0, 'pacote completo com noites externas permanece sem acréscimo')
+    const legacyExcluded = evaluatePackageBreaks(percentPartialLines, [percentPackage], new Set(['2026-09-04','2026-09-05']))
+    add(legacyExcluded.totalAdjustment===0 && legacyExcluded.usages[0].excludedByLegacy===2, 'valor fechado legado impede dupla cobrança')
+
+    const basicRoom = {suite:'varanda', casal:true, solteiros:0, criancas:0, bebes:0}
+    const adjustedFinancials = calculateRoomFinancials(basicRoom, percentPartialLines.map(line=>({...line, packageAdjustment:percentBreak.lineAdjustments[line.data]})), false)
+    add(adjustedFinancials.subtotal===330, 'acréscimo entra na base e não altera adicionais')
+    const extraGuestRoom = {suite:'sem', casal:true, solteiros:1, criancas:0, bebes:0}
+    const extraGuestFinancials = calculateRoomFinancials(extraGuestRoom, percentPartialLines.map(line=>({...line, packageAdjustment:percentBreak.lineAdjustments[line.data]})), false)
+    add(extraGuestFinancials.totalBase===330 && extraGuestFinancials.totalExtras===180 && extraGuestFinancials.ajusteSuite===-40 && extraGuestFinancials.subtotal===470, 'hóspede extra e desconto de suíte mantêm a ordem de cálculo')
+    const roundedBreak = evaluatePackageBreaks([{data:'2026-09-04', base:99.99, extraVlr:90}], [{...percentPackage, minNights:1, surchargeValue:7.5}])
+    add(roundedBreak.totalAdjustment===7.5, 'percentual é arredondado por noite no padrão monetário')
+    const multipleBreaks = evaluatePackageBreaks([...percentPartialLines,{data:'2026-09-10', base:150, extraVlr:90}], [percentPackage, fixedPackage])
+    add(multipleBreaks.totalAdjustment===55 && multipleBreaks.usages.length===2, 'reserva atravessando pacotes avalia cada intervalo separadamente')
+    add(evaluatePackageBreaks(percentPartialLines, []).totalAdjustment===0, 'ausência de configuração preserva o preço anterior')
+    const legacyExactLines = ['2025-11-20','2025-11-21','2025-11-22'].map(data=>({data, base:100, extraVlr:90, packageAdjustment:0}))
+    const legacyExtendedLines = [{data:'2025-11-19', base:300, extraVlr:90, packageAdjustment:0}, ...legacyExactLines, {data:'2025-11-23', base:400, extraVlr:90, packageAdjustment:0}]
+    add(calculateRoomFinancials(basicRoom, legacyExactLines, true).subtotal===1500, 'pacote legado completo mantém o valor anterior')
+    add(calculateRoomFinancials(basicRoom, legacyExtendedLines, true).subtotal===2200, 'pacote legado completo com noites externas preserva o fechado e soma extensões')
+
+    // Equivalências de estadia — configuração e resolução exata
+    const equivalenceA = {
+      id:'equiv-a', name:'Alternativa A', active:true,
+      referenceFrom:'2026-09-04', referenceTo:'2026-09-07',
+      alternativeFrom:'2026-09-03', alternativeTo:'2026-09-06'
+    }
+    const equivalenceB = {...equivalenceA, id:'equiv-b', name:'Alternativa B', alternativeFrom:'2026-09-05', alternativeTo:'2026-09-08'}
+    const yearTurnEquivalence = {...equivalenceA, id:'equiv-year', name:'Virada', referenceFrom:'2026-12-29', referenceTo:'2027-01-02', alternativeFrom:'2026-12-30', alternativeTo:'2027-01-03'}
+    add(validateStayEquivalences([equivalenceA, equivalenceB, yearTurnEquivalence]).valid===true, 'várias alternativas por referência e virada do ano são aceitas')
+    add(validateStayEquivalences([equivalenceA, {...equivalenceA, id:'equiv-dup', name:'Duplicada'}]).valid===false, 'alternativa duplicada ou ambígua é rejeitada')
+    add(validateStayEquivalences([{...equivalenceA, alternativeFrom:equivalenceA.referenceFrom, alternativeTo:equivalenceA.referenceTo}]).valid===false, 'autorreferência é rejeitada')
+    const chained = {...equivalenceB, referenceFrom:equivalenceA.alternativeFrom, referenceTo:equivalenceA.alternativeTo}
+    add(validateStayEquivalences([equivalenceA, chained]).valid===false, 'encadeamento entre equivalências é rejeitado')
+    add(findStayEquivalence('2026-09-03','2026-09-06',[equivalenceA])===equivalenceA, 'correspondência exata ativa localiza a equivalência')
+    add(findStayEquivalence('2026-09-03','2026-09-07',[equivalenceA])===null && findStayEquivalence('2026-09-03','2026-09-06',[{...equivalenceA,active:false}])===null, 'duração diferente e equivalência inativa preservam o cálculo original')
+    add(findStayEquivalence('2026-12-30','2027-01-02',[yearTurnEquivalence])===null, 'modalidade de três noites não herda equivalência de quatro noites')
+    const yearTurnBlock = {id:'block-year',name:'Bloqueio independente',active:true,dates:['2026-12-31','2027-01-01']}
+    add(validateCheckinBlocks([yearTurnBlock]).valid===true && validateCheckinBlocks([yearTurnBlock,{...yearTurnBlock,id:'block-dup'}]).valid===false, 'bloqueios independentes validam datas e rejeitam duplicidade')
+    add(!!findExplicitCheckinBlock('2026-12-31',[yearTurnBlock]) && !findExplicitCheckinBlock('2026-12-30',[yearTurnBlock]), 'bloqueio explícito rejeita somente o check-in cadastrado e permite permanência na data')
+    add(!!findExplicitCheckinBlock('2026-12-31',[yearTurnBlock]) && findStayEquivalence('2026-12-30','2027-01-03',[{...yearTurnEquivalence,active:false}])===null, 'bloqueio permanece efetivo sem equivalência de preço ativa')
+    add(referencePricingIssue([{data:'2026-12-29',base:0,extraVlr:90,especial:true,fora:false}],1).length>0, 'referência com pacote manual não gera equivalência aparentemente válida')
+
+    const referencePriceLines = [
+      {data:'2026-09-04', base:320, extraVlr:90, packageAdjustment:0},
+      {data:'2026-09-05', base:340, extraVlr:90, packageAdjustment:0},
+      {data:'2026-09-06', base:360, extraVlr:90, packageAdjustment:0}
+    ]
+    const alternativePriceLines = referencePriceLines.map((line,index)=>({...line, data:['2026-09-03','2026-09-04','2026-09-05'][index], packageAdjustment:0}))
+    const equivalenceRooms = [
+      {suite:'varanda', casal:true, solteiros:0, criancas:0, bebes:0},
+      {suite:'varanda', casal:false, solteiros:3, criancas:1, bebes:1},
+      {suite:'sem', casal:true, solteiros:1, criancas:0, bebes:2}
+    ]
+    add(equivalenceRooms.every(room=>calculateRoomFinancials(room, referencePriceLines, false).subtotal===calculateRoomFinancials(room, alternativePriceLines, false).subtotal), 'referência e alternativa têm o mesmo preço com casal, solteiros, extras, cortesia e desconto de suíte')
+    const breakWouldCharge = evaluatePackageBreaks(referencePriceLines, [{...percentPackage, from:'2026-09-04', to:'2026-09-08'}]).totalAdjustment
+    add(breakWouldCharge>0 && alternativePriceLines.every(line=>line.packageAdjustment===0), 'equivalência usa a referência sem dupla cobrança de quebra ou noite externa')
+    const quoteSettingsPayload = payloadWithQuoteSettings({daily:{}})
+    add(Array.isArray(quoteSettingsPayload.packageBreaks) && Array.isArray(quoteSettingsPayload.stayEquivalences) && Array.isArray(quoteSettingsPayload.checkinBlocks), 'backup/publicação incluem pacotes, equivalências e bloqueios independentes')
+
+    // Composição, preço-base e extras por quarto
+    const oneSingle = {casal:false, solteiros:1, criancas:0, bebes:0}
+    const twoSingles = {casal:false, solteiros:2, criancas:0, bebes:0}
+    const couple = {casal:true, solteiros:0, criancas:0, bebes:0}
+    const coupleAndSingle = {casal:true, solteiros:1, criancas:0, bebes:0}
+    const threeSingles = {casal:false, solteiros:3, criancas:0, bebes:0}
+    add([oneSingle, twoSingles, couple].every(room=>countRoomGuests(room).extras===0), '01 solteiro, 02 solteiros e casal usam somente a tarifa base')
+    add(countRoomGuests(coupleAndSingle).extras===1 && countRoomGuests(threeSingles).extras===1, 'Casal + 01 solteiro e 03 solteiros usam 1 adicional')
+    add(compLabel(oneSingle)==='01 solteiro' && compLabel(twoSingles)==='02 solteiros' && compLabel(couple)==='Casal', 'mensagem distingue casal e solteiros')
+    add(compLabel({...coupleAndSingle, criancas:1})==='Casal + 01 solteiro + 01 criança', 'mensagem combina casal, solteiro e criança')
+
+    const coupleAndPayingChild = {casal:true, solteiros:0, criancas:1, bebes:0}
+    const coupleAndCourtesyBaby = {casal:true, solteiros:0, criancas:0, bebes:1}
+    const coupleAndTwoBabies = {casal:true, solteiros:0, criancas:0, bebes:2}
+    add(countRoomGuests(coupleAndPayingChild).extras===1, 'criança pagante continua contando como adicional')
+    add(countRoomGuests(coupleAndCourtesyBaby).extras===0 && countRoomGuests(coupleAndCourtesyBaby).bebesCortesia===1, '1 bebê mantém a cortesia por quarto')
+    add(countRoomGuests(coupleAndTwoBabies).extras===1 && countRoomGuests(coupleAndTwoBabies).bebesCortesia===1, '2º bebê continua contando como adicional')
+    add(roomDescription(coupleAndCourtesyBaby)==='Casal + 01 criança não pagante', 'mensagem mantém a redação da cortesia')
+
+    let pricingRegressionOk = true
+    for (const casal of [false, true]){
+      for (let solteiros=0; solteiros<=4; solteiros++){
+        for (let criancas=0; criancas<=3; criancas++){
+          for (let bebes=0; bebes<=3; bebes++){
+            const adultosAnteriores = (casal ? 2 : 0) + solteiros
+            const extrasAnteriores = Math.max(0, adultosAnteriores + criancas + bebes - (2 + Math.min(bebes, 1)))
+            if (countRoomGuests({casal, solteiros, criancas, bebes}).extras !== extrasAnteriores) pricingRegressionOk = false
+          }
+        }
+      }
+    }
+    add(pricingRegressionOk, 'nova composição preserva a fórmula anterior de extras')
+
+    const legacyCouple = normalizeRoomComposition({adultos:3, rotulo2A:'casal'})
+    const legacyAdults = normalizeRoomComposition({adultos:2, rotulo2A:'adultos'})
+    add(legacyCouple.casal===true && legacyCouple.solteiros===1 && legacyAdults.casal===false && legacyAdults.solteiros===2, 'estrutura anterior de adultos continua normalizável')
 
   }catch(e){ add(false, 'Erro inesperado nos testes: '+e.message) }
 }
